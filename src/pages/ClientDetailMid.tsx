@@ -16,7 +16,7 @@ interface Opportunity {
   id: string;
   description: string;
   status: string;
-  clientId: string; // Relación con el cliente
+  clientId: string; 
 }
 
 const ClientDetails: React.FC = () => {
@@ -24,7 +24,7 @@ const ClientDetails: React.FC = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedClientId] = useState<string>('3667235'); // ID del cliente específico a mostrar
+  const [selectedClientId] = useState<string>('3667235');
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -54,7 +54,7 @@ const ClientDetails: React.FC = () => {
       const simulatedOpportunities: Opportunity[] = [
         { id: '1', description: 'Oportunidad 1', status: 'Abierta', clientId: '3667235' },
         { id: '2', description: 'Oportunidad 2', status: 'Cerrada', clientId: '3667235' },
-        { id: '3', description: 'Oportunidad 3', status: 'Abierta', clientId: '1234567' }, // Oportunidad para otro cliente
+        { id: '3', description: 'Oportunidad 3', status: 'Abierta', clientId: '1234567' }, 
       ];
       setOpportunities(simulatedOpportunities);
     };
