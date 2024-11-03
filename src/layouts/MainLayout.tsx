@@ -1,6 +1,6 @@
 // src/layout/MainLayout.tsx
 import React from 'react';
-import Home from '../pages/Home';
+
 
 
 type MainLayoutProps = {
@@ -11,7 +11,6 @@ const MainLayout: React.FC<MainLayoutProps> = () => {
   return (
     <div >
       Prueba MainLayout
-      <Home />
     </div>
   );
 };
