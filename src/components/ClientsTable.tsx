@@ -1,21 +1,61 @@
+import React, { useEffect, useState } from 'react';
+
+interface Client {
+  id: string; // Cambia a string porque el ID en tu ejemplo es un string
+  nit: string;
+  name: string;
+  address: string;
+  city: string;
+  country: string;
+  phone: string;
+  email: string;
+  active: boolean;
+}
+
 const ClientsTable = () => {
-  const clients = [
-    { id: 1, nit: '123456789', name: 'Empresa XYZ', address: 'Calle 1 #123', city: 'Bogotá', country: 'Colombia', phone: '+57 123 4567890', email: 'contacto@empresa.xyz', status: 'ACTIVO' },
-    { id: 2, nit: '987654321', name: 'Empresa ABC', address: 'Calle 2 #234', city: 'Medellín', country: 'Colombia', phone: '+57 234 5678901', email: 'contacto@empresa.abc', status: 'INACTIVO' },
-    { id: 3, nit: '456789123', name: 'Empresa XXX', address: 'Calle 3 #345', city: 'Cali', country: 'Colombia', phone: '+57 345 6789012', email: 'contacto@empresa.xxx', status: 'ACTIVO' },
-    { id: 4, nit: '321654987', name: 'Empresa DEF', address: 'Calle 4 #456', city: 'Barranquilla', country: 'Colombia', phone: '+57 456 7890123', email: 'contacto@empresa.def', status: 'ACTIVO' },
-    { id: 5, nit: '789123456', name: 'Empresa GHI', address: 'Calle 5 #567', city: 'Cartagena', country: 'Colombia', phone: '+57 567 8901234', email: 'contacto@empresa.ghi', status: 'INACTIVO' },
-    { id: 6, nit: '654987321', name: 'Empresa JKL', address: 'Calle 6 #678', city: 'Pereira', country: 'Colombia', phone: '+57 678 9012345', email: 'contacto@empresa.jkl', status: 'ACTIVO' },
-    { id: 7, nit: '987321654', name: 'Empresa MNO', address: 'Calle 7 #789', city: 'Manizales', country: 'Colombia', phone: '+57 789 0123456', email: 'contacto@empresa.mno', status: 'INACTIVO' },
-    { id: 8, nit: '123789456', name: 'Empresa PQR', address: 'Calle 8 #890', city: 'Bucaramanga', country: 'Colombia', phone: '+57 890 1234567', email: 'contacto@empresa.pqr', status: 'ACTIVO' },
-    { id: 9, nit: '789456123', name: 'Empresa STU', address: 'Calle 9 #901', city: 'Cúcuta', country: 'Colombia', phone: '+57 901 2345678', email: 'contacto@empresa.stu', status: 'ACTIVO' },
-    { id: 10, nit: '456123789', name: 'Empresa VWX', address: 'Calle 10 #012', city: 'Santa Marta', country: 'Colombia', phone: '+57 012 3456789', email: 'contacto@empresa.vwx', status: 'INACTIVO' },
-  ];
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null); 
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await fetch('https://web-fe-react-prj3-api.onrender.com/clients');
+        if (!response.ok) {
+          throw new Error(`Error al obtener los clientes: ${response.statusText}`);
+        }
+        const data = await response.json();
+        
+        console.log('Datos recibidos:', data);
+    
+        if (Array.isArray(data)) {
+          setClients(data);
+        } else {
+          setClients([data]);
+        }
+      } catch (error) {
+        console.error('Error al obtener los clientes:', error);
+        setError('Error al cargar los datos'); 
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchClients();
+  }, []);
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
 
   return (
     <div className="flex justify-center p-4">
       <div className="overflow-x-auto overflow-y-auto max-h-[500px] max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
-        <table className="table-auto bg-white w-[1400px] rounded-md">
+        <table className="table-auto bg-white w-full rounded-md">
           <thead>
             <tr className="bg-gray-200 text-gray-700 text-sm">
               <th className="py-3 px-4 text-center font-semibold">NIT</th>
@@ -39,10 +79,10 @@ const ClientsTable = () => {
                 <td className="text-center w-[90px]">{client.country}</td>
                 <td className="text-center w-[100px]">{client.phone}</td>
                 <td className="text-center w-[200px]">{client.email}</td>
-                <td className={`text-center w-[100px] ${client.status === 'ACTIVO' ? 'text-green-500' : 'text-gray-700'}`}>
-                  {client.status}
+                <td className={`text-center w-[100px] ${client.active ? 'text-green-500' : 'text-gray-700'}`}>
+                  {client.active ? 'ACTIVO' : 'INACTIVO'}
                 </td>
-                <td className="text-center py-4 w-[150px]">
+                <td className="text-center py-4 w-[250px]">
                   <div className="flex justify-center">
                     <button className="bg-[#FF9800] text-white px-4 py-1 rounded-l-full flex items-center justify-center text-sm">
                       Actualizar
