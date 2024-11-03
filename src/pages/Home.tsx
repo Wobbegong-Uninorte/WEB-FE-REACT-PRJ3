@@ -2,6 +2,7 @@
 import React from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import ClientsTable from "../components/ClientsTable";
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -11,7 +12,8 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex-column justify-center items-center h-screen">
+
       <Button
         variant="contained"
         color="primary"
@@ -19,6 +21,7 @@ const Home: React.FC = () => {
       >
         Crear Cliente
       </Button>
+      <ClientsTable />
     </div>
   );
 };
