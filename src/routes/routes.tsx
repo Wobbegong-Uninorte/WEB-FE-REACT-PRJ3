@@ -2,6 +2,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from '../pages/Home';
 import CreateClient from '../pages/CreateClient';
+import ClientDetailMid from '../pages/ClientDetailMid';
 
 const router = createBrowserRouter([
   {
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
   {
     path: "/clientes/nuevo",
     element: <CreateClient />,
+  },
+  {
+    path: "/ClientesDetalle",
+    element: <ClientDetailMid/>
   }
 ]);
 
