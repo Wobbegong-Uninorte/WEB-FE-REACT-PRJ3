@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import SeguimientoOportunidad from '../components/OpportunityFollowUp';
 
 interface Client {
   id: string;
@@ -18,58 +19,6 @@ interface Opportunity {
   status: string;
   clientId: string;
 }
-
-interface FollowUpActivity {
-  id: string;
-  date: string;
-  notes: string;
-}
-
-const SeguimientoOportunidad: React.FC<{ opportunity: Opportunity; onClose: () => void }> = ({ opportunity, onClose }) => {
-  const [activities, setActivities] = useState<FollowUpActivity[]>([]);
-
-  useEffect(() => {
-    const simulatedActivities: FollowUpActivity[] = [
-      { id: '1', date: '2023-01-15', notes: 'Primera reunión con el cliente' },
-      { id: '2', date: '2023-01-22', notes: 'Llamada de seguimiento' },
-      { id: '3', date: '2023-02-05', notes: 'Demostración de producto' },
-    ];
-    setActivities(simulatedActivities);
-  }, [opportunity]);
-
-  return (
-    <div className="mt-8 p-6 border-t border-gray-300">
-      <div className="flex justify-between items-center mb-4">
-        <h4 className="text-xl font-semibold text-gray-800">
-          Actividades de Seguimiento para: {opportunity.description}
-        </h4>
-        <button
-          onClick={onClose}
-          className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded"
-          aria-label="Cerrar seguimiento"
-        >
-          &#10005;
-        </button>
-      </div>
-      <table className="min-w-full bg-gray-100 border border-gray-300 rounded-lg">
-        <thead className="bg-blue-600 text-white">
-          <tr>
-            <th className="px-6 py-3 border-b text-left">Fecha</th>
-            <th className="px-6 py-3 border-b text-left">Notas</th>
-          </tr>
-        </thead>
-        <tbody>
-          {activities.map((activity) => (
-            <tr key={activity.id} className="hover:bg-blue-100 transition duration-200">
-              <td className="px-6 py-4 border-b text-gray-700">{activity.date}</td>
-              <td className="px-6 py-4 border-b text-gray-700">{activity.notes}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-};
 
 const ClientDetails: React.FC = () => {
   const [clients, setClients] = useState<Client[]>([]);
