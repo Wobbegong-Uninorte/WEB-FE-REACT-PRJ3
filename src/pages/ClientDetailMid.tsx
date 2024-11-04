@@ -25,11 +25,10 @@ interface FollowUpActivity {
   notes: string;
 }
 
-const SeguimientoOportunidad: React.FC<{ opportunity: Opportunity }> = ({ opportunity }) => {
+const SeguimientoOportunidad: React.FC<{ opportunity: Opportunity; onClose: () => void }> = ({ opportunity, onClose }) => {
   const [activities, setActivities] = useState<FollowUpActivity[]>([]);
 
   useEffect(() => {
-    // Simula una API o datos de seguimiento para cada oportunidad
     const simulatedActivities: FollowUpActivity[] = [
       { id: '1', date: '2023-01-15', notes: 'Primera reunión con el cliente' },
       { id: '2', date: '2023-01-22', notes: 'Llamada de seguimiento' },
@@ -39,10 +38,19 @@ const SeguimientoOportunidad: React.FC<{ opportunity: Opportunity }> = ({ opport
   }, [opportunity]);
 
   return (
-    <div className="mt-8">
-      <h4 className="text-xl font-semibold text-gray-800 mb-4">
-        Actividades de Seguimiento para: {opportunity.description}
-      </h4>
+    <div className="mt-8 p-6 border-t border-gray-300">
+      <div className="flex justify-between items-center mb-4">
+        <h4 className="text-xl font-semibold text-gray-800">
+          Actividades de Seguimiento para: {opportunity.description}
+        </h4>
+        <button
+          onClick={onClose}
+          className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded"
+          aria-label="Cerrar seguimiento"
+        >
+          &#10005;
+        </button>
+      </div>
       <table className="min-w-full bg-gray-100 border border-gray-300 rounded-lg">
         <thead className="bg-blue-600 text-white">
           <tr>
@@ -70,6 +78,7 @@ const ClientDetails: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedClientId] = useState<string>('3667235');
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
+  const [showFollowUp, setShowFollowUp] = useState(false);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -102,6 +111,16 @@ const ClientDetails: React.FC = () => {
 
   const filteredOpportunities = opportunities.filter(opportunity => opportunity.clientId === selectedClientId);
 
+  const handleFollowUpClick = (opportunity: Opportunity) => {
+    setSelectedOpportunity(opportunity);
+    setShowFollowUp(true);
+  };
+
+  const handleCloseFollowUp = () => {
+    setShowFollowUp(false);
+    setSelectedOpportunity(null);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-200 flex items-center justify-center p-6">
       <div className="max-w-4xl w-full bg-white rounded-lg shadow-lg p-8">
@@ -132,7 +151,9 @@ const ClientDetails: React.FC = () => {
                         <td className="px-6 py-4 border-b text-gray-700">{opportunity.status}</td>
                         <td className="px-6 py-4 border-b text-center">
                           <button
-                            onClick={() => setSelectedOpportunity(opportunity)}
+                            onClick={() => handleFollowUpClick(opportunity)}
+                            aria-expanded={showFollowUp}
+                            aria-controls="follow-up-section"
                             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150"
                           >
                             Seguimiento
@@ -150,7 +171,11 @@ const ClientDetails: React.FC = () => {
                 </tbody>
               </table>
             </div>
-            {selectedOpportunity && <SeguimientoOportunidad opportunity={selectedOpportunity} />}
+            {showFollowUp && selectedOpportunity && (
+              <div id="follow-up-section" className="transition-all duration-300">
+                <SeguimientoOportunidad opportunity={selectedOpportunity} onClose={handleCloseFollowUp} />
+              </div>
+            )}
           </>
         )}
       </div>
