@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface Client {
@@ -94,7 +94,7 @@ const ClientsTable = () => {
       setUpdateError(null);
     } catch (error) {
       console.error('Error al actualizar:', error);
-      setUpdateError(`Error al actualizar el estado del cliente: ${error.message}`);
+      setUpdateError(`Error al actualizar el estado del cliente`);
     } finally {
       setUpdatingClientId(null);
     }
