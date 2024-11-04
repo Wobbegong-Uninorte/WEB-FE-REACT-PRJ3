@@ -25,10 +25,20 @@ const Home: React.FC = () => {
       <Button
         variant="contained"
         color="primary"
+        onClick={() => navigate('/ClientesDetalleTop')}
+      >
+        Detalle Cliente (Top)
+      </Button>
+
+
+      <Button
+        variant="contained"
+        color="primary"
         onClick={() => navigate('/ClientesDetalle')}
       >
         Detalle Cliente (Intermedio)
       </Button>
+
 
       <ClientsTable />
     </div>
