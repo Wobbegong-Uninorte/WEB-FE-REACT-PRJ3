@@ -34,6 +34,7 @@ const ClientDetails: React.FC = () => {
         const response = await fetch('https://web-fe-react-prj3-api.onrender.com/clients');
         const data = await response.json();
         console.log('API Response:', data);
+        console.log(clients)
 
         if (Array.isArray(data)) {
           setClients(data);
