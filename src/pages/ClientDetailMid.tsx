@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import SeguimientoOportunidad from '../components/OpportunityFollowUp';
 
 interface Client {
   id: string;
@@ -16,7 +17,7 @@ interface Opportunity {
   id: string;
   description: string;
   status: string;
-  clientId: string; 
+  clientId: string;
 }
 
 const ClientDetails: React.FC = () => {
@@ -25,6 +26,8 @@ const ClientDetails: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedClientId] = useState<string>('3667235');
+  const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
+  const [showFollowUp, setShowFollowUp] = useState(false);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -43,6 +46,7 @@ const ClientDetails: React.FC = () => {
         } else {
           setClients([]);
         }
+        setClients(Array.isArray(data) ? data : [data]);
       } catch (error) {
         console.error('Error fetching clients:', error);
         setError('No se pudieron cargar los clientes.');
@@ -55,7 +59,7 @@ const ClientDetails: React.FC = () => {
       const simulatedOpportunities: Opportunity[] = [
         { id: '1', description: 'Oportunidad 1', status: 'Abierta', clientId: '3667235' },
         { id: '2', description: 'Oportunidad 2', status: 'Cerrada', clientId: '3667235' },
-        { id: '3', description: 'Oportunidad 3', status: 'Abierta', clientId: '1234567' }, 
+        { id: '3', description: 'Oportunidad 3', status: 'Abierta', clientId: '1234567' },
       ];
       setOpportunities(simulatedOpportunities);
     };
@@ -64,8 +68,17 @@ const ClientDetails: React.FC = () => {
     fetchOpportunities();
   }, []);
 
-  // Filtramos oportunidades solo para el cliente seleccionado
   const filteredOpportunities = opportunities.filter(opportunity => opportunity.clientId === selectedClientId);
+
+  const handleFollowUpClick = (opportunity: Opportunity) => {
+    setSelectedOpportunity(opportunity);
+    setShowFollowUp(true);
+  };
+
+  const handleCloseFollowUp = () => {
+    setShowFollowUp(false);
+    setSelectedOpportunity(null);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-blue-200 flex items-center justify-center p-6">
@@ -96,7 +109,12 @@ const ClientDetails: React.FC = () => {
                         <td className="px-6 py-4 border-b text-gray-700">{opportunity.description}</td>
                         <td className="px-6 py-4 border-b text-gray-700">{opportunity.status}</td>
                         <td className="px-6 py-4 border-b text-center">
-                          <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150">
+                          <button
+                            onClick={() => handleFollowUpClick(opportunity)}
+                            aria-expanded={showFollowUp}
+                            aria-controls="follow-up-section"
+                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300 transition duration-150"
+                          >
                             Seguimiento
                           </button>
                         </td>
@@ -112,6 +130,11 @@ const ClientDetails: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            {showFollowUp && selectedOpportunity && (
+              <div id="follow-up-section" className="transition-all duration-300">
+                <SeguimientoOportunidad opportunity={selectedOpportunity} onClose={handleCloseFollowUp} />
+              </div>
+            )}
           </>
         )}
       </div>
