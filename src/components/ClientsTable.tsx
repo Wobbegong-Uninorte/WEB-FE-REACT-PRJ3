@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface Client {
   id: string;
@@ -13,6 +14,7 @@ interface Client {
 }
 
 const ClientsTable = () => {
+  const navigate = useNavigate();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -97,6 +99,12 @@ const ClientsTable = () => {
       setUpdatingClientId(null);
     }
   };
+  
+  const handleClientClick = (client: Client) => {
+    // Guardamos la información del cliente en localStorage para acceder a ella en la página de detalles
+    localStorage.setItem('selectedClient', JSON.stringify(client));
+    navigate('/ClientesDetalleTop');
+  };
 
   if (loading) {
     return <div className="flex justify-center p-4">Cargando...</div>;
@@ -138,7 +146,7 @@ const ClientsTable = () => {
                 className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-sm ${!client.active ? 'text-red-500' : 'text-gray-700'}`}
               >
                 <td className="text-center w-[90px]">{client.nit}</td>
-                <td className="text-center w-[120px]">{client.name}</td>
+                <td className="text-center w-[120px] cursor-pointer hover:text-blue-600 hover:underline" onClick={() => handleClientClick(client)}>{client.name}</td>
                 <td className="text-center w-[130px]">{client.address}</td>
                 <td className="text-center w-[90px]">{client.city}</td>
                 <td className="text-center w-[90px]">{client.country}</td>

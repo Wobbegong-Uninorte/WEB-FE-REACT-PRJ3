@@ -21,6 +21,13 @@ const Home: React.FC = () => {
       >
         Crear Cliente
       </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate('/ClientesDetalleTop')}
+      >
+        Detalle Cliente (Top)
+      </Button>
       <ClientsTable />
     </div>
   );
