@@ -12,7 +12,7 @@ const Home: React.FC = () => {
   };
 
   return (
-
+    <div> {/* Contenedor agregado para evitar el error de estructura JSX */}
       <Button
         variant="contained"
         color="primary"
@@ -29,7 +29,6 @@ const Home: React.FC = () => {
         Detalle Cliente (Top)
       </Button>
 
-
       <Button
         variant="contained"
         color="primary"
@@ -38,10 +37,8 @@ const Home: React.FC = () => {
         Detalle Cliente (Intermedio)
       </Button>
 
-
       <ClientsTable />
     </div>
-  
   );
 };
 
