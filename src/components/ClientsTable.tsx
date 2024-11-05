@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import UpdateClient from './UpdateClient';
 
 interface Client {
   id: string;
@@ -20,6 +21,8 @@ const ClientsTable = () => {
   const [error, setError] = useState<string | null>(null);
   const [updatingClientId, setUpdatingClientId] = useState<string | null>(null);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   useEffect(() => {
     fetchClients();
@@ -101,9 +104,43 @@ const ClientsTable = () => {
   };
   
   const handleClientClick = (client: Client) => {
-    // Guardamos la información del cliente en localStorage para acceder a ella en la página de detalles
     localStorage.setItem('selectedClient', JSON.stringify(client));
     navigate('/ClientesDetalleTop');
+  };
+
+  const handleUpdateClick = (client: Client) => {
+    setSelectedClient(client);
+    setShowUpdateModal(true);
+  };
+
+  const handleClientUpdate = async (updatedClient: Client) => {
+    setUpdatingClientId(updatedClient.id);
+    setUpdateError(null);
+
+    try {
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${updatedClient.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedClient),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al actualizar el cliente');
+      }
+
+      setClients(prevClients => 
+        prevClients.map(client => 
+          client.id === updatedClient.id ? updatedClient : client
+        )
+      );
+    } catch (error) {
+      console.error('Error al actualizar el cliente:', error);
+      setUpdateError('Error al actualizar el cliente');
+    } finally {
+      setUpdatingClientId(null);
+      setShowUpdateModal(false);
+    }
   };
 
   if (loading) {
@@ -159,7 +196,7 @@ const ClientsTable = () => {
                   <div className="flex justify-center gap-2">
                     <button 
                       className="bg-[#FF9800] text-white px-4 py-1 rounded-l-full flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={!client.active || updatingClientId === client.id}
+                      onClick={() => handleUpdateClick(client)}
                     >
                       Actualizar
                     </button>
@@ -177,6 +214,14 @@ const ClientsTable = () => {
           </tbody>
         </table>
       </div>
+
+      {showUpdateModal && selectedClient && (
+        <UpdateClient
+          client={selectedClient}
+          onClose={() => setShowUpdateModal(false)}
+          onUpdate={handleClientUpdate}
+        />
+      )}
     </div>
   );
 };
