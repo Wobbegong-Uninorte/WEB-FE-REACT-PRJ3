@@ -8,11 +8,10 @@ const Home: React.FC = () => {
   const navigate = useNavigate();
 
   const handleCreateClientClick = () => {
-    navigate('/clientes/nuevo'); // Cambia la ruta a '/clientes/nuevo'
+    navigate('/clientes/nuevo'); 
   };
 
   return (
-    <div className="flex-column justify-center items-center h-screen">
 
       <Button
         variant="contained"
