@@ -103,7 +103,7 @@ const ClientsTable = () => {
   const handleClientClick = (client: Client) => {
     // Guardamos la información del cliente en localStorage para acceder a ella en la página de detalles
     localStorage.setItem('selectedClient', JSON.stringify(client));
-    navigate('/ClientesDetalleTop');
+    navigate('/ClientesDetails');
   };
 
   if (loading) {

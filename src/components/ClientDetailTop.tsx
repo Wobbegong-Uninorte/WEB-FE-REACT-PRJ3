@@ -35,7 +35,7 @@ const ClientDetailTop = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 bg-[#f3f4f6]">
       <button 
         onClick={() => navigate(-1)}
         className="flex items-center text-gray-600 hover:text-gray-800 mb-4"
