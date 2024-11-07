@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ClientsTable from "../components/ClientsTable";
+import MainLayout from '../layouts/MainLayout'
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -12,33 +13,18 @@ const Home: React.FC = () => {
   };
 
   return (
-    <div> {/* Contenedor agregado para evitar el error de estructura JSX */}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleCreateClientClick}
-      >
-        Crear Cliente
-      </Button>
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => navigate('/ClientesDetalleTop')}
-      >
-        Detalle Cliente (Top)
-      </Button>
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => navigate('/ClientesDetalle')}
-      >
-        Detalle Cliente (Intermedio)
-      </Button>
-
-      <ClientsTable />
-    </div>
+    <MainLayout>
+      <div> {/* Contenedor agregado para evitar el error de estructura JSX */}
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCreateClientClick}
+          >
+            Crear Cliente
+          </Button>
+          <ClientsTable />
+      </div>
+    </MainLayout>
   );
 };
 
