@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import ClientForm from '../components/ClientList';
 import { createClient } from '../services/clientServices';
 import { ClientType } from '../types/clients';
+import MainLayout from '../layouts/MainLayout';
+
 
 const CreateClient: React.FC = () => {
   const navigate = useNavigate();
@@ -18,7 +20,11 @@ const CreateClient: React.FC = () => {
     }
   };
 
-  return <ClientForm onSubmit={handleCreateClient} />;
+  return (
+    <MainLayout> 
+      <ClientForm onSubmit={handleCreateClient} />
+    </MainLayout>
+  );
 };
 
 export default CreateClient;

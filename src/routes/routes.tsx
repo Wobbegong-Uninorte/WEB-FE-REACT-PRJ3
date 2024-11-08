@@ -5,7 +5,9 @@ import CreateClient from '../pages/CreateClient';
 
 import ClientDetailTop from "../components/ClientDetailTop"
 
-import ClientDetailMid from '../pages/ClientDetailMid';
+//import ClientDetailMid from '../pages/ClientDetailMid';
+
+import ClientDetails from '../pages/ClientDetails';
 
 
 const router = createBrowserRouter([
@@ -21,9 +23,13 @@ const router = createBrowserRouter([
     path: "/ClientesDetalleTop",
     element: <ClientDetailTop/>
   },
-  {
+  /*{
     path: "/ClientesDetalle",
     element: <ClientDetailMid/>
+  },*/
+  {
+    path: "/ClientesDetails",
+    element: <ClientDetails/>
   }
 ]);
 
