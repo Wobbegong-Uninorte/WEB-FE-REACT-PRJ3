@@ -35,13 +35,7 @@ const ClientsTable = () => {
         throw new Error(`Error al obtener los clientes: ${response.statusText}`);
       }
       const data = await response.json();
-      console.log('Datos recibidos:', data);
-  
-      if (Array.isArray(data)) {
-        setClients(data);
-      } else {
-        setClients([data]);
-      }
+      setClients(Array.isArray(data) ? data : [data]);
       setError(null);
     } catch (error) {
       console.error('Error al obtener los clientes:', error);
@@ -61,17 +55,18 @@ const ClientsTable = () => {
         throw new Error('Cliente no encontrado');
       }
 
-      console.log('Enviando actualización:', clientToUpdate);
+      // Crear una copia del cliente con el nuevo estado
+      const updatedClient = {
+        ...clientToUpdate,
+        active: newStatus
+      };
 
-      const response = await fetch('https://web-fe-react-prj3-api.onrender.com/clients', {
-        method: 'POST',  // Cambiamos a POST según la API
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${clientId}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          ...clientToUpdate,
-          active: newStatus
-        }),
+        body: JSON.stringify(updatedClient),
       });
 
       if (!response.ok) {
@@ -79,30 +74,22 @@ const ClientsTable = () => {
         throw new Error(errorData.message || 'Error al actualizar el estado del cliente');
       }
 
-      const responseData = await response.json();
-      console.log('Respuesta de la API:', responseData);
-
-      // Actualizamos el estado local
+      // Actualizar el estado local después de una respuesta exitosa
       setClients(prevClients =>
         prevClients.map(client =>
-          client.id === clientId
-            ? { ...client, active: newStatus }
-            : client
+          client.id === clientId ? updatedClient : client
         )
       );
       
-      // Recargamos los datos para asegurar sincronización
-      await fetchClients();
-      
       setUpdateError(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al actualizar:', error);
-      setUpdateError(`Error al actualizar el estado del cliente`);
+      setUpdateError(error.message || 'Error al actualizar el estado del cliente');
     } finally {
       setUpdatingClientId(null);
     }
   };
-  
+
   const handleClientClick = (client: Client) => {
     localStorage.setItem('selectedClient', JSON.stringify(client));
     navigate('/ClientesDetalleTop');
@@ -129,17 +116,19 @@ const ClientsTable = () => {
         throw new Error(errorData.message || 'Error al actualizar el cliente');
       }
 
+      // Actualizar el estado local después de una actualización exitosa
       setClients(prevClients => 
         prevClients.map(client => 
           client.id === updatedClient.id ? updatedClient : client
         )
       );
+
+      setShowUpdateModal(false);
     } catch (error) {
       console.error('Error al actualizar el cliente:', error);
       setUpdateError('Error al actualizar el cliente');
     } finally {
       setUpdatingClientId(null);
-      setShowUpdateModal(false);
     }
   };
 
@@ -183,7 +172,10 @@ const ClientsTable = () => {
                 className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-sm ${!client.active ? 'text-red-500' : 'text-gray-700'}`}
               >
                 <td className="text-center w-[90px]">{client.nit}</td>
-                <td className="text-center w-[120px] cursor-pointer hover:text-blue-600 hover:underline" onClick={() => handleClientClick(client)}>{client.name}</td>
+                <td className="text-center w-[120px] cursor-pointer hover:text-blue-600 hover:underline" 
+                    onClick={() => handleClientClick(client)}>
+                  {client.name}
+                </td>
                 <td className="text-center w-[130px]">{client.address}</td>
                 <td className="text-center w-[90px]">{client.city}</td>
                 <td className="text-center w-[90px]">{client.country}</td>
@@ -197,6 +189,7 @@ const ClientsTable = () => {
                     <button 
                       className="bg-[#FF9800] text-white px-4 py-1 rounded-l-full flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                       onClick={() => handleUpdateClick(client)}
+                      disabled={updatingClientId === client.id}
                     >
                       Actualizar
                     </button>
