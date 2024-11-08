@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import 'tailwindcss/tailwind.css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import UpdateClient from './UpdateClient';
+
 
 interface Client {
   id: string;
@@ -26,6 +28,9 @@ const ClientsTable = () => {
 
   const [currentPage, setCurrentPage] = useState(0);
   const resultsPerPage = 8;
+
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   useEffect(() => {
     fetchClients();
@@ -66,16 +71,17 @@ const ClientsTable = () => {
 
       console.log('Enviando actualización:', clientToUpdate);
 
-      const response = await fetch('https://web-fe-react-prj3-api.onrender.com/clients', {
-        method: 'POST',
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${clientId}`, {
+        method: 'PUT',  
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           ...clientToUpdate,
-          active: newStatus
+          active: newStatus,
         }),
       });
+      
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -122,90 +128,132 @@ const ClientsTable = () => {
     return <div className="flex justify-center p-4">Cargando...</div>;
   }
 
+  const handleUpdateClick = (client: Client) => {
+    setSelectedClient(client);
+    setShowUpdateModal(true);
+  };
+
+  const handleClientUpdate = async (updatedClient: Client) => {
+    setUpdatingClientId(updatedClient.id);
+    setUpdateError(null);
+
+    try {
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${updatedClient.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedClient),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al actualizar el cliente');
+      }
+
+      setClients(prevClients => 
+        prevClients.map(client => 
+          client.id === updatedClient.id ? updatedClient : client
+        )
+      );
+    } catch (error) {
+      console.error('Error al actualizar el cliente:', error);
+      setUpdateError('Error al actualizar el cliente');
+    } finally {
+      setUpdatingClientId(null);
+      setShowUpdateModal(false);
+    }
+  };
+
   return (
-<div className="flex flex-col items-center p-4">
-    {error && (
-      <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-        {error}
+      <div className="flex flex-col items-center p-4">
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+            {error}
+          </div>
+        )}
+
+        {updateError && (
+          <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+            {updateError}
+          </div>
+        )}
+
+        {/* Contenedor con scroll horizontal */}
+        <div className="overflow-x-auto overflow-y-auto max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
+        <table className="table-auto bg-white w-full rounded-md">
+              <thead>
+                <tr className="bg-gray-200 text-gray-700 text-sm">
+                  <th className="py-3 px-4 text-center font-semibold">NIT</th>
+                  <th className="py-3 px-4 text-center font-semibold">Nombre</th>
+                  <th className="py-3 px-4 text-center font-semibold">Dirección</th>
+                  <th className="py-3 px-4 text-center font-semibold">Ciudad</th>
+                  <th className="py-3 px-4 text-center font-semibold">País</th>
+                  <th className="py-3 px-4 text-center font-semibold">Teléfono</th>
+                  <th className="py-3 px-4 text-center font-semibold">Correo</th>
+                  <th className="py-3 px-4 text-center font-semibold">Estado</th>
+                  <th className="py-3 px-4 text-center font-semibold">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+              {currentClients.map((client, index) => (
+                <tr 
+                  key={client.id} 
+                  className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-sm ${!client.active ? 'text-red-500' : 'text-gray-700'}`}
+                >
+                  <td className="text-center w-[90px]">{client.nit}</td>
+                  <td className="text-center w-[120px] cursor-pointer hover:text-blue-600 hover:underline" onClick={() => handleClientClick(client)}>{client.name}</td>
+                  <td className="text-center w-[130px]">{client.address}</td>
+                  <td className="text-center w-[90px]">{client.city}</td>
+                  <td className="text-center w-[90px]">{client.country}</td>
+                  <td className="text-center w-[100px]">{client.phone}</td>
+                  <td className="text-center w-[200px]">{client.email}</td>
+                  <td className={`text-center w-[100px] ${client.active ? 'text-green-500' : 'text-red-500'}`}>
+                    {client.active ? 'ACTIVO' : 'INACTIVO'}
+                  </td>
+                  <td className="text-center py-4 w-[250px]">
+                    <div className="flex justify-center gap-2">
+                      <button 
+                        className="bg-[#FF9800] text-white px-4 py-1 rounded-l-full flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={!client.active || updatingClientId === client.id}
+                        onClick={() => handleUpdateClick(client)}
+                      >
+                        Actualizar
+                      </button>
+                      <button 
+                        className={`${client.active ? 'bg-[#00BCD4]' : 'bg-green-500'} text-white px-4 py-1 rounded-r-full flex items-center justify-center text-sm disabled:opacity-50`}
+                        onClick={() => toggleClientStatus(client.id, !client.active)}
+                        disabled={updatingClientId === client.id}
+                      >
+                        {updatingClientId === client.id ? 'Procesando...' : client.active ? 'Inactivar' : 'Activar'}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        
+          <ReactPaginate
+            previousLabel={<FaArrowLeft />}
+            nextLabel={<FaArrowRight />}
+            pageCount={Math.ceil(clients.length / resultsPerPage)}
+            onPageChange={handlePageChange}
+            containerClassName="pagination flex mt-4 space-x-2 overflow-auto justify-center items-center"
+            pageClassName="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-all duration-200 ease-in-out"
+            activeClassName="bg-blue-500 text-white font-semibold border border-blue-600 rounded-md"
+            previousClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
+            nextClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
+            disabledClassName="opacity-50 cursor-not-allowed"
+        />
+            {showUpdateModal && selectedClient && (
+              <UpdateClient
+                client={selectedClient}
+                onClose={() => setShowUpdateModal(false)}
+                onUpdate={handleClientUpdate}
+              />
+            )}
       </div>
-    )}
-
-    {updateError && (
-      <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
-        {updateError}
-      </div>
-    )}
-
-    {/* Contenedor con scroll horizontal */}
-    <div className="overflow-x-auto overflow-y-auto max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
-    <table className="table-auto bg-white w-full rounded-md">
-          <thead>
-            <tr className="bg-gray-200 text-gray-700 text-sm">
-              <th className="py-3 px-4 text-center font-semibold">NIT</th>
-              <th className="py-3 px-4 text-center font-semibold">Nombre</th>
-              <th className="py-3 px-4 text-center font-semibold">Dirección</th>
-              <th className="py-3 px-4 text-center font-semibold">Ciudad</th>
-              <th className="py-3 px-4 text-center font-semibold">País</th>
-              <th className="py-3 px-4 text-center font-semibold">Teléfono</th>
-              <th className="py-3 px-4 text-center font-semibold">Correo</th>
-              <th className="py-3 px-4 text-center font-semibold">Estado</th>
-              <th className="py-3 px-4 text-center font-semibold">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-          {currentClients.map((client, index) => (
-            <tr 
-              key={client.id} 
-              className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-sm ${!client.active ? 'text-red-500' : 'text-gray-700'}`}
-            >
-              <td className="text-center w-[90px]">{client.nit}</td>
-              <td className="text-center w-[120px] cursor-pointer hover:text-blue-600 hover:underline" onClick={() => handleClientClick(client)}>{client.name}</td>
-              <td className="text-center w-[130px]">{client.address}</td>
-              <td className="text-center w-[90px]">{client.city}</td>
-              <td className="text-center w-[90px]">{client.country}</td>
-              <td className="text-center w-[100px]">{client.phone}</td>
-              <td className="text-center w-[200px]">{client.email}</td>
-              <td className={`text-center w-[100px] ${client.active ? 'text-green-500' : 'text-red-500'}`}>
-                {client.active ? 'ACTIVO' : 'INACTIVO'}
-              </td>
-              <td className="text-center py-4 w-[250px]">
-                <div className="flex justify-center gap-2">
-                  <button 
-                    className="bg-[#FF9800] text-white px-4 py-1 rounded-l-full flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                    disabled={!client.active || updatingClientId === client.id}
-                  >
-                    Actualizar
-                  </button>
-                  <button 
-                    className={`${client.active ? 'bg-[#00BCD4]' : 'bg-green-500'} text-white px-4 py-1 rounded-r-full flex items-center justify-center text-sm disabled:opacity-50`}
-                    onClick={() => toggleClientStatus(client.id, !client.active)}
-                    disabled={updatingClientId === client.id}
-                  >
-                    {updatingClientId === client.id ? 'Procesando...' : client.active ? 'Inactivar' : 'Activar'}
-                  </button>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-    
-      <ReactPaginate
-        previousLabel={<FaArrowLeft />}
-        nextLabel={<FaArrowRight />}
-        pageCount={Math.ceil(clients.length / resultsPerPage)}
-        onPageChange={handlePageChange}
-        containerClassName="pagination flex mt-4 space-x-2 overflow-auto justify-center items-center"
-        pageClassName="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-all duration-200 ease-in-out"
-        activeClassName="bg-blue-500 text-white font-semibold border border-blue-600 rounded-md"
-        previousClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
-        nextClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
-        disabledClassName="opacity-50 cursor-not-allowed"
-    />
-
-  </div>
-  );
+    );
 };
 
 export default ClientsTable;
