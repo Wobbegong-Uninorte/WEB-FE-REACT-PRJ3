@@ -30,6 +30,7 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+
       // Cambiar el método a PUT para actualizar el cliente
       const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${client.id}`, {
         method: 'PUT',
@@ -122,6 +123,7 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
                 className="border p-3 rounded-lg w-full mb-2"
               />
             </div>
+
             <div>
               <label className="block text-gray-600 mb-1">Teléfono</label>
               <input

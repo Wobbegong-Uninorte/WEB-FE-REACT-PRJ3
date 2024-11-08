@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import ReactPaginate from 'react-paginate';
 import 'tailwindcss/tailwind.css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import UpdateClient from './UpdateClient';
-
 
 interface Client {
   id: string;
@@ -25,6 +25,8 @@ const ClientsTable = () => {
   const [error, setError] = useState<string | null>(null);
   const [updatingClientId, setUpdatingClientId] = useState<string | null>(null);
   const [updateError, setUpdateError] = useState<string | null>(null);
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   const [currentPage, setCurrentPage] = useState(0);
   const resultsPerPage = 8;
@@ -124,6 +126,41 @@ const ClientsTable = () => {
     setCurrentPage(selectedItem.selected);
   };
 
+  const handleUpdateClick = (client: Client) => {
+    setSelectedClient(client);
+    setShowUpdateModal(true);
+  };
+
+  const handleClientUpdate = async (updatedClient: Client) => {
+    setUpdatingClientId(updatedClient.id);
+    setUpdateError(null);
+
+    try {
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${updatedClient.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedClient),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al actualizar el cliente');
+      }
+
+      setClients(prevClients => 
+        prevClients.map(client => 
+          client.id === updatedClient.id ? updatedClient : client
+        )
+      );
+    } catch (error) {
+      console.error('Error al actualizar el cliente:', error);
+      setUpdateError('Error al actualizar el cliente');
+    } finally {
+      setUpdatingClientId(null);
+      setShowUpdateModal(false);
+    }
+  };
+
   if (loading) {
     return <div className="flex justify-center p-4">Cargando...</div>;
   }
@@ -180,6 +217,7 @@ const ClientsTable = () => {
         {/* Contenedor con scroll horizontal */}
         <div className="overflow-x-auto overflow-y-auto max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
         <table className="table-auto bg-white w-full rounded-md">
+
               <thead>
                 <tr className="bg-gray-200 text-gray-700 text-sm">
                   <th className="py-3 px-4 text-center font-semibold">NIT</th>
