@@ -132,6 +132,7 @@ const ClientsTable = () => {
   const handleClientUpdate = async (updatedClient: Client) => {
     setUpdatingClientId(updatedClient.id);
     setUpdateError(null);
+   };
 
     try {
       const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${updatedClient.id}`, {
