@@ -1,8 +1,6 @@
 // src/components/ClientForm.tsx
 import React, { useState } from 'react';
 import { ClientType } from '../types/clients';
-import MainLayout from '../layouts/MainLayout'
-
 
 type ClientFormProps = {
   onSubmit: (client: ClientType) => void;
@@ -32,7 +30,6 @@ const ClientForm: React.FC<ClientFormProps> = ({ onSubmit }) => {
   };
 
   return (
-    <MainLayout>
       <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
         <form onSubmit={handleSubmit} className="w-full max-w-md p-6 bg-white shadow-lg rounded-md space-y-6">
           <h2 className="text-3xl font-semibold text-center text-gray-800">Crear Cliente</h2>
@@ -58,7 +55,6 @@ const ClientForm: React.FC<ClientFormProps> = ({ onSubmit }) => {
           </button>
         </form>
       </div>
-    </MainLayout>
   );
 };
 

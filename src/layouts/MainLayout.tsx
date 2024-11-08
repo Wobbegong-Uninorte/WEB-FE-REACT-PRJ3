@@ -30,7 +30,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                         </button>
                         <div className="hidden lg:block">
                             <img 
-                            src="./crm.png" 
+                            src="/crm.png" 
                             alt="Imagen de ejemplo" 
                             className="h-12 w-12 rounded-full" 
                             />
@@ -101,7 +101,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
 
                             <div className="relative text-center">
                                 <div className="mb-4 flex items-center justify-center transform transition-all duration-300 hover:scale-110">
-                                    <img src="./feature.png" alt="Rocket" className="h-14 w-14" />
+                                    <img src="/feature.png" alt="Rocket" className="h-14 w-14" />
                                 </div>
                                 <p className="text-lg font-semibold text-white">¡Nueva actualización disponible!</p>
                                 <p className="text-sm text-white/80 mb-4">Haz clic para actualizar</p>
