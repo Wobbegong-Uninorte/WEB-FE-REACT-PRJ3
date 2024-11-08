@@ -67,6 +67,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </header>
 
             <div className="flex flex-1">
+                {/* Menú de hamburguesa desplegable en modo responsive */}
                 {isMenuOpen && (
                     <nav className="lg:hidden bg-blue-700 p-4 absolute top-16 left-0 right-0 z-40 shadow-lg rounded-b-lg">
                         <ul className="space-y-2">
@@ -126,7 +127,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                             ))}
                         </ul>
                     </nav>
-                    <div className="pt-6 mt-4 border-t border-white/30">
+
+                    {/* Sección de actualización en el menú lateral */}
+                    <div className="pt-6 mt-6 border-t border-white/30">
                         <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-lg p-6 transform transition-all duration-500 hover:scale-105">
                             <div className="absolute -top-4 -left-4 w-16 h-16 bg-yellow-400/60 rounded-full animate-pulse"></div>
                             <div className="absolute -top-6 -right-6 w-20 h-20 bg-yellow-600/40 rounded-full animate-pulse"></div>
@@ -146,9 +149,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                     </div>
                 </aside>
 
-                <main className="flex-grow p-4 max-w-[1200px] mx-auto bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl shadow-inner">
-                        {children}
-                    </main>
+                <main className="flex-1 p-8 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl shadow-inner">
+                    {children}
+                </main>
             </div>
 
             <footer className="bg-gray-900 text-white py-6 text-center shadow-inner mt-8">

@@ -25,7 +25,7 @@ const ClientsTable = () => {
   const [updateError, setUpdateError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(0);
-  const resultsPerPage = 8;
+  const resultsPerPage = 3;
 
   useEffect(() => {
     fetchClients();
@@ -191,18 +191,19 @@ const ClientsTable = () => {
       </table>
     </div>
     
-    <ReactPaginate
-      previousLabel={<FaArrowLeft />} 
-      nextLabel={<FaArrowRight />} 
-      pageCount={Math.ceil(clients.length / resultsPerPage)}
-      onPageChange={handlePageChange}
-      containerClassName={'pagination flex mt-4 space-x-2 overflow-auto'}
-      pageClassName={'px-3 py-1 bg-gray-200 rounded'}
-      activeClassName={'bg-blue-600 text-white font-semibold border border-blue-700'}
-      previousClassName={'mt-2 rounded'}
-      nextClassName={'mt-2 rounded'}
-      disabledClassName={'opacity-50 cursor-not-allowed'}
+      <ReactPaginate
+        previousLabel={<FaArrowLeft />}
+        nextLabel={<FaArrowRight />}
+        pageCount={Math.ceil(clients.length / resultsPerPage)}
+        onPageChange={handlePageChange}
+        containerClassName="pagination flex mt-4 space-x-2 overflow-auto justify-center items-center"
+        pageClassName="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-all duration-200 ease-in-out"
+        activeClassName="bg-blue-500 text-white font-semibold border border-blue-600 rounded-md"
+        previousClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
+        nextClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
+        disabledClassName="opacity-50 cursor-not-allowed"
     />
+
   </div>
   );
 };

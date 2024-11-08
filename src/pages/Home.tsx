@@ -21,7 +21,7 @@ const Home: React.FC = () => {
           size="small" // Tamaño pequeño para igualarlo al botón anterior
           startIcon={<PlusCircle size={16} />} // Agrega el icono al inicio, de 16px como en el otro código
           onClick={handleCreateClientClick}
-          style={{ paddingLeft: '8px' }} // Espaciado a la izquierda para igualar el estilo del botón
+          style={{ paddingLeft: '8px', fontWeight: 'bold'}} // Espaciado a la izquierda para igualar el estilo del botón
         >
           Crear Cliente
         </Button>
