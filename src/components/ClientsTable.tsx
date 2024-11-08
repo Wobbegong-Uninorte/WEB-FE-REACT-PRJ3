@@ -25,8 +25,6 @@ const ClientsTable = () => {
   const [error, setError] = useState<string | null>(null);
   const [updatingClientId, setUpdatingClientId] = useState<string | null>(null);
   const [updateError, setUpdateError] = useState<string | null>(null);
-  const [showUpdateModal, setShowUpdateModal] = useState(false);
-  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
   const [currentPage, setCurrentPage] = useState(0);
   const resultsPerPage = 8;
@@ -164,15 +162,6 @@ const ClientsTable = () => {
   if (loading) {
     return <div className="flex justify-center p-4">Cargando...</div>;
   }
-
-  const handleUpdateClick = (client: Client) => {
-    setSelectedClient(client);
-    setShowUpdateModal(true);
-  };
-
-  const handleClientUpdate = async (updatedClient: Client) => {
-    setUpdatingClientId(updatedClient.id);
-    setUpdateError(null);
 
     try {
       const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${updatedClient.id}`, {
