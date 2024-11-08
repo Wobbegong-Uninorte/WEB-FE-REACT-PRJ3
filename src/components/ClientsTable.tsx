@@ -4,7 +4,6 @@ import ReactPaginate from 'react-paginate';
 import 'tailwindcss/tailwind.css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 
-
 interface Client {
   id: string;
   nit: string;
@@ -27,7 +26,7 @@ const ClientsTable = () => {
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(0);
-  const resultsPerPage = 10; // numeros por paginas
+  const resultsPerPage = 8; // numeros por paginas
 
   useEffect(() => {
     fetchClients();
@@ -41,7 +40,7 @@ const ClientsTable = () => {
       }
       const data = await response.json();
       console.log('Datos recibidos:', data);
-  
+
       if (Array.isArray(data)) {
         setClients(data);
       } else {
@@ -59,7 +58,7 @@ const ClientsTable = () => {
   const toggleClientStatus = async (clientId: string, newStatus: boolean) => {
     setUpdatingClientId(clientId);
     setUpdateError(null);
-    
+
     try {
       const clientToUpdate = clients.find(c => c.id === clientId);
       if (!clientToUpdate) {
@@ -108,7 +107,6 @@ const ClientsTable = () => {
     }
   };
 
-
   const handleClientClick = (client: Client) => {
     // Guardamos la información del cliente en localStorage para acceder a ella en la página de detalles
     localStorage.setItem('selectedClient', JSON.stringify(client));
@@ -124,25 +122,27 @@ const ClientsTable = () => {
   const handlePageChange = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected);
   };
+
   if (loading) {
     return <div className="flex justify-center p-4">Cargando...</div>;
   }
 
   return (
-    <div className="flex flex-col items-center p-4">
+    <div className="flex flex-col items-center p-4 overflow-hidden">
       {error && (
         <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
           {error}
         </div>
       )}
-      
+
       {updateError && (
         <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
           {updateError}
         </div>
       )}
 
-      <div className="overflow-x-auto overflow-y-auto max-h-[500px] max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
+      {/* Contenedor con scroll horizontal */}
+      <div className="overflow-x-auto max-w-full border border-gray-100 rounded-md shadow-xl">
         <table className="table-auto bg-white w-full rounded-md">
           <thead>
             <tr className="bg-gray-200 text-gray-700 text-sm">
@@ -195,19 +195,20 @@ const ClientsTable = () => {
           </tbody>
         </table>
       </div>
-        {/* ReactPaginate */}
-        <ReactPaginate
-          previousLabel={<FaArrowLeft />} 
-          nextLabel={<FaArrowRight />} 
-          pageCount={Math.ceil(clients.length / resultsPerPage)}
-          onPageChange={handlePageChange}
-          containerClassName={'pagination flex mt-4 space-x-2'}
-          pageClassName={'px-3 py-1 bg-gray-200 rounded'}
-          activeClassName={'bg-blue-500 text-white'}
-          previousClassName={'mt-2 rounded'}
-          nextClassName={'mt-2 rounded'}
-          disabledClassName={'opacity-50 cursor-not-allowed'}
-        />
+      
+      {/* ReactPaginate */}
+      <ReactPaginate
+        previousLabel={<FaArrowLeft />} 
+        nextLabel={<FaArrowRight />} 
+        pageCount={Math.ceil(clients.length / resultsPerPage)}
+        onPageChange={handlePageChange}
+        containerClassName={'pagination flex mt-4 space-x-2 overflow-auto'}
+        pageClassName={'px-3 py-1 bg-gray-200 rounded'}
+        activeClassName={'bg-blue-500 text-white'}
+        previousClassName={'mt-2 rounded'}
+        nextClassName={'mt-2 rounded'}
+        disabledClassName={'opacity-50 cursor-not-allowed'}
+      />
     </div>
   );
 };
