@@ -1,9 +1,9 @@
-// src/pages/Home.tsx
 import React from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { PlusCircle } from 'lucide-react'; // Asegúrate de tener instalado lucide-react para los iconos
 import ClientsTable from "../components/ClientsTable";
-import MainLayout from '../layouts/MainLayout'
+import MainLayout from '../layouts/MainLayout';
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
@@ -15,14 +15,17 @@ const Home: React.FC = () => {
   return (
     <MainLayout>
       <div> {/* Contenedor agregado para evitar el error de estructura JSX */}
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleCreateClientClick}
-          >
-            Crear Cliente
-          </Button>
-          <ClientsTable />
+        <Button
+          variant="contained" // Contained da un estilo sólido, similar al predeterminado
+          color="primary"
+          size="small" // Tamaño pequeño para igualarlo al botón anterior
+          startIcon={<PlusCircle size={16} />} // Agrega el icono al inicio, de 16px como en el otro código
+          onClick={handleCreateClientClick}
+          style={{ paddingLeft: '8px' }} // Espaciado a la izquierda para igualar el estilo del botón
+        >
+          Crear Cliente
+        </Button>
+        <ClientsTable />
       </div>
     </MainLayout>
   );

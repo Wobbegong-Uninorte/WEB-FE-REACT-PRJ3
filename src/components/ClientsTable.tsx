@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReactPaginate from 'react-paginate';
+import 'tailwindcss/tailwind.css';
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+
 
 interface Client {
   id: string;
@@ -20,6 +24,10 @@ const ClientsTable = () => {
   const [error, setError] = useState<string | null>(null);
   const [updatingClientId, setUpdatingClientId] = useState<string | null>(null);
   const [updateError, setUpdateError] = useState<string | null>(null);
+
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(0);
+  const resultsPerPage = 10; // numeros por paginas
 
   useEffect(() => {
     fetchClients();
@@ -99,13 +107,23 @@ const ClientsTable = () => {
       setUpdatingClientId(null);
     }
   };
-  
+
+
   const handleClientClick = (client: Client) => {
     // Guardamos la información del cliente en localStorage para acceder a ella en la página de detalles
     localStorage.setItem('selectedClient', JSON.stringify(client));
     navigate('/ClientesDetails');
   };
 
+  // Lógica de paginación
+  const currentClients = clients.slice(
+    currentPage * resultsPerPage,
+    (currentPage + 1) * resultsPerPage
+  );
+
+  const handlePageChange = (selectedItem: { selected: number }) => {
+    setCurrentPage(selectedItem.selected);
+  };
   if (loading) {
     return <div className="flex justify-center p-4">Cargando...</div>;
   }
@@ -140,7 +158,7 @@ const ClientsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {clients.map((client, index) => (
+            {currentClients.map((client, index) => (
               <tr 
                 key={client.id} 
                 className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-sm ${!client.active ? 'text-red-500' : 'text-gray-700'}`}
@@ -177,6 +195,19 @@ const ClientsTable = () => {
           </tbody>
         </table>
       </div>
+        {/* ReactPaginate */}
+        <ReactPaginate
+          previousLabel={<FaArrowLeft />} 
+          nextLabel={<FaArrowRight />} 
+          pageCount={Math.ceil(clients.length / resultsPerPage)}
+          onPageChange={handlePageChange}
+          containerClassName={'pagination flex mt-4 space-x-2'}
+          pageClassName={'px-3 py-1 bg-gray-200 rounded'}
+          activeClassName={'bg-blue-500 text-white'}
+          previousClassName={'mt-2 rounded'}
+          nextClassName={'mt-2 rounded'}
+          disabledClassName={'opacity-50 cursor-not-allowed'}
+        />
     </div>
   );
 };
