@@ -25,7 +25,7 @@ const ClientsTable = () => {
   const [updateError, setUpdateError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(0);
-  const resultsPerPage = 3;
+  const resultsPerPage = 8;
 
   useEffect(() => {
     fetchClients();
@@ -137,22 +137,22 @@ const ClientsTable = () => {
     )}
 
     {/* Contenedor con scroll horizontal */}
-    <div className="overflow-x-auto w-full border border-gray-100 rounded-md shadow-xl">
-      <table className="table-auto bg-white min-w-[800px] rounded-md"> {/* Cambié w-full por min-w-[800px] */}
-        <thead>
-          <tr className="bg-gray-200 text-gray-700 text-sm">
-            <th className="py-3 px-4 text-center font-semibold">NIT</th>
-            <th className="py-3 px-4 text-center font-semibold">Nombre</th>
-            <th className="py-3 px-4 text-center font-semibold">Dirección</th>
-            <th className="py-3 px-4 text-center font-semibold">Ciudad</th>
-            <th className="py-3 px-4 text-center font-semibold">País</th>
-            <th className="py-3 px-4 text-center font-semibold">Teléfono</th>
-            <th className="py-3 px-4 text-center font-semibold">Correo</th>
-            <th className="py-3 px-4 text-center font-semibold">Estado</th>
-            <th className="py-3 px-4 text-center font-semibold">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="overflow-x-auto overflow-y-auto max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
+    <table className="table-auto bg-white w-full rounded-md">
+          <thead>
+            <tr className="bg-gray-200 text-gray-700 text-sm">
+              <th className="py-3 px-4 text-center font-semibold">NIT</th>
+              <th className="py-3 px-4 text-center font-semibold">Nombre</th>
+              <th className="py-3 px-4 text-center font-semibold">Dirección</th>
+              <th className="py-3 px-4 text-center font-semibold">Ciudad</th>
+              <th className="py-3 px-4 text-center font-semibold">País</th>
+              <th className="py-3 px-4 text-center font-semibold">Teléfono</th>
+              <th className="py-3 px-4 text-center font-semibold">Correo</th>
+              <th className="py-3 px-4 text-center font-semibold">Estado</th>
+              <th className="py-3 px-4 text-center font-semibold">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
           {currentClients.map((client, index) => (
             <tr 
               key={client.id} 
