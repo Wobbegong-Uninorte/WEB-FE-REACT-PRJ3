@@ -67,8 +67,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </header>
 
             <div className="flex flex-1">
-               <aside className="w-64 bg-white shadow-lg h-screen p-6 hidden lg:block transition-all duration-300 transform">
-               { /* <nav aria-label="Sidebar" className="space-y-4">
+                <aside className="w-16 lg:w-64 bg-white shadow-lg h-screen p-3 lg:p-6 transition-all duration-300 transform">
+                    <nav aria-label="Sidebar" className="space-y-4">
                         <ul className="space-y-2">
                             {[
                                 { path: '/', icon: <Users className="h-6 w-6" />, label: 'Clientes' },
@@ -79,17 +79,22 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                                 <li key={item.path}>
                                     <button 
                                         onClick={() => navigate(item.path)} 
-                                        className="flex items-center space-x-4 text-gray-700 hover:text-blue-600 hover:bg-blue-100 rounded-lg p-3 transition-all duration-300 transform hover:scale-x-105 focus:ring-2 focus:ring-blue-500">
+                                        className="flex items-center text-gray-700 hover:text-blue-600 hover:bg-blue-100 rounded-lg p-3 transition-all duration-300 transform hover:scale-x-105 focus:ring-2 focus:ring-blue-500"
+                                    >
                                         {item.icon}
-                                        <span className="font-medium text-lg">{item.label}</span>
+                                        <span className="font-medium text-lg lg:ml-2 hidden lg:inline-block">
+                                            {item.label}
+                                        </span>
                                     </button>
                                 </li>
                             ))}
                         </ul>
-                    </nav>  */} 
+                    </nav>
+
+
 
                     {/* Sección de actualización en el menú lateral */}
-                    <div className="pt-6 mt-6 border-t border-white/30">
+                    <div className="pt-6 mt-6 border-t border-white/30 hidden lg:block">
                         <div className="relative overflow-hidden rounded-lg bg-gradient-to-r from-yellow-300 to-yellow-500 shadow-lg p-6 transform transition-all duration-500 hover:scale-105">
                             <div className="absolute -top-4 -left-4 w-16 h-16 bg-yellow-400/60 rounded-full animate-pulse"></div>
                             <div className="absolute -top-6 -right-6 w-20 h-20 bg-yellow-600/40 rounded-full animate-pulse"></div>
@@ -108,13 +113,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                         </div>
                     </div>
                 </aside>
-
                 <main className="flex-1 p-8 bg-gradient-to-r from-gray-50 to-gray-100 rounded-xl shadow-inner overflow-hidden">
                     {children}
                 </main>
             </div>
 
-            <footer className="bg-gray-900 text-white py-6 text-center shadow-inner mt-8">
+            <footer className="bg-gray-900 text-white py-6 text-center shadow-inner ">
                 <div className="container mx-auto px-4">
                     <p>&copy; {new Date().getFullYear()} <strong>CRM Pro</strong>. Todos los derechos reservados.</p>
                     <p className="text-sm mt-2">Desarrollado con dedicación para la gestión eficiente de clientes.</p>
