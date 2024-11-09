@@ -72,7 +72,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                         <ul className="space-y-2">
                             {[
                                 { path: '/', icon: <Users className="h-6 w-6" />, label: 'Clientes' },
-                                { path: '/opportunities', icon: <Target className="h-6 w-6" />, label: 'Oportunidades' },
+                                { path: '/OpportunitiesPage', icon: <Target className="h-6 w-6" />, label: 'Oportunidades' },
                                 { path: '/tracking', icon: <LineChart className="h-6 w-6" />, label: 'Seguimiento' },
                                 { path: '/dashboard', icon: <LayoutDashboard className="h-6 w-6" />, label: 'Dashboard' },
                             ].map((item) => (
