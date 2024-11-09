@@ -1,14 +1,9 @@
-// src/routes/AppRoutes.tsx
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from '../pages/Home';
 import CreateClient from '../pages/CreateClient';
-
-import ClientDetailTop from "../components/ClientDetailTop"
-
-//import ClientDetailMid from '../pages/ClientDetailMid';
-
+import ClientDetailTop from "../components/ClientDetailTop";
 import ClientDetails from '../pages/ClientDetails';
-
+import OpportunitiesPage from '../pages/OpportunitiesPage'; // Asegúrate de que el nombre y ruta de importación sean correctos
 
 const router = createBrowserRouter([
   {
@@ -21,15 +16,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/ClientesDetalleTop",
-    element: <ClientDetailTop/>
+    element: <ClientDetailTop />
   },
-  /*{
-    path: "/ClientesDetalle",
-    element: <ClientDetailMid/>
-  },*/
   {
     path: "/ClientesDetails",
-    element: <ClientDetails/>
+    element: <ClientDetails />
+  },
+  {
+    path: "/OpportunitiesPage", 
+    element: <OpportunitiesPage /> 
   }
 ]);
 
