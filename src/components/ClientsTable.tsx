@@ -239,12 +239,13 @@ const ClientsTable = () => {
             pageCount={Math.ceil(clients.length / resultsPerPage)}
             onPageChange={handlePageChange}
             containerClassName="pagination flex mt-4 space-x-2 overflow-auto justify-center items-center"
-            pageClassName="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-md transition-all duration-200 ease-in-out"
-            activeClassName="bg-blue-500 text-white font-semibold border border-blue-600 rounded-md"
+            pageClassName="px-3 py-1 rounded-md transition-all duration-200 ease-in-out"  // Solo configuramos las clases comunes
+            activeClassName="bg-blue-500 text-white font-semibold border border-blue-600"  // Azul para la página activa
             previousClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
             nextClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
             disabledClassName="opacity-50 cursor-not-allowed"
-        />
+          />
+
             {showUpdateModal && selectedClient && (
               <UpdateClient
                 client={selectedClient}
