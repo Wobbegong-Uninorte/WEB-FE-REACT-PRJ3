@@ -1,24 +1,28 @@
 // src/components/OpportunityForm.tsx
 
-import React, { useState } from 'react';
-import { Opportunity } from '../types/opportunities';
+import React, { useState } from "react";
+import { Opportunities } from "../types/opportunities";
 
 type OpportunityFormProps = {
-  onSubmit: (opportunity: Opportunity) => void;
+  onSubmit: (opportunity: Opportunities) => void;
 };
 
 const OpportunityForm: React.FC<OpportunityFormProps> = ({ onSubmit }) => {
-  const [opportunity, setOpportunity] = useState<Opportunity>({
-    client: '',
-    businessName: '',
-    businessLine: 'outsourcing recursos',
-    description: '',
+  const [opportunity, setOpportunity] = useState<Opportunities>({
+    client: "",
+    businessName: "",
+    businessLine: "outsourcing recursos",
+    description: "",
     estimatedValue: 0,
     estimatedDate: new Date(),
-    status: 'Apertura',
+    status: "Apertura",
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
+  ) => {
     const { name, value } = e.target;
     setOpportunity({ ...opportunity, [name]: value });
   };
@@ -30,11 +34,18 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ onSubmit }) => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
-      <form onSubmit={handleSubmit} className="w-full max-w-md p-6 bg-white shadow-lg rounded-md space-y-6">
-        <h2 className="text-3xl font-semibold text-center text-gray-800">Crear Oportunidad</h2>
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md p-6 bg-white shadow-lg rounded-md space-y-6"
+      >
+        <h2 className="text-3xl font-semibold text-center text-gray-800">
+          Crear Oportunidad
+        </h2>
 
         <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Cliente</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Cliente
+          </label>
           <select
             name="client"
             value={opportunity.client}
@@ -49,7 +60,9 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Nombre de Negocio</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Nombre de Negocio
+          </label>
           <input
             type="text"
             name="businessName"
@@ -60,7 +73,9 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Línea de Negocio</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Línea de Negocio
+          </label>
           <select
             name="businessLine"
             value={opportunity.businessLine}
@@ -75,7 +90,9 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Descripción</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Descripción
+          </label>
           <textarea
             name="description"
             value={opportunity.description}
@@ -85,7 +102,9 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Valor Estimado</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Valor Estimado
+          </label>
           <input
             type="number"
             name="estimatedValue"
@@ -96,12 +115,19 @@ const OpportunityForm: React.FC<OpportunityFormProps> = ({ onSubmit }) => {
         </div>
 
         <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">Fecha Estimada de Realización</label>
+          <label className="block mb-1 text-sm font-medium text-gray-700">
+            Fecha Estimada de Realización
+          </label>
           <input
             type="date"
             name="estimatedDate"
-            value={opportunity.estimatedDate.toISOString().split('T')[0]}
-            onChange={(e) => setOpportunity({ ...opportunity, estimatedDate: new Date(e.target.value) })}
+            value={opportunity.estimatedDate.toISOString().split("T")[0]}
+            onChange={(e) =>
+              setOpportunity({
+                ...opportunity,
+                estimatedDate: new Date(e.target.value),
+              })
+            }
             className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:border-gray-600"
           />
         </div>
