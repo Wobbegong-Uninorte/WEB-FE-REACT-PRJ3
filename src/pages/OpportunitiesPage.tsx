@@ -3,10 +3,11 @@ import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react'; 
 import MainLayout from '../layouts/MainLayout';
+import OpportunitiesTable from '../components/OpportunitiesTable';
 
 const OpportunitiesPage: React.FC = () => {
   const navigate = useNavigate();
-
+  
   const handleCreateClientClick = () => {
     navigate('/oportunidad/nueva'); 
   };
@@ -24,7 +25,7 @@ const OpportunitiesPage: React.FC = () => {
         >
           Crear Oportunidad
         </Button> 
-                {/*Lista de oportunidades*/}
+        <OpportunitiesTable />
       </div>
     </MainLayout>
   );
