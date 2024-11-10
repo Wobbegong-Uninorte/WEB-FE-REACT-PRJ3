@@ -52,6 +52,7 @@ const ClientDetails: React.FC = () => {
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [showFollowUp, setShowFollowUp] = useState(false);
 
+  
   useEffect(() => {
     const savedClient = localStorage.getItem('selectedClient');
     if (savedClient) {
@@ -98,6 +99,8 @@ const ClientDetails: React.FC = () => {
     setSelectedOpportunity(null);
   };
 
+  
+
   return (
     <div className="container mx-auto p-6 bg-[#f3f4f6] rounded-lg shadow-lg transition-all ease-in-out duration-300">
       <div className="w-full bg-white rounded-lg shadow-md">
@@ -119,67 +122,144 @@ const ClientDetails: React.FC = () => {
             </div>
           </div>
         )}
+
+
+
         <div className="p-6 overflow-auto">
-          <table className="w-full border-t bg-white rounded-lg shadow-sm">
-            <thead>
-              <tr className="bg-gray-100 text-gray-600">
-                <th className="p-4 text-left text-sm font-semibold">Nombre Negocio</th>
-                <th className="p-4 text-left text-sm font-semibold">Línea de Negocio</th>
-                <th className="p-4 text-left text-sm font-semibold">Descripción</th>
-                <th className="p-4 text-left text-sm font-semibold">Valor Estimado</th>
-                <th className="p-4 text-left text-sm font-semibold">Fecha Estimada</th>
-                <th className="p-4 text-left text-sm font-semibold">Estado</th>
-                <th className="p-4 text-left text-sm font-semibold">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOpportunities.length > 0 ? (
-                filteredOpportunities.map((opportunity) => {
-                  return (
-                    <tr key={opportunity.id} className="border-b hover:bg-gray-50 transition-all ease-in-out duration-150">
-                      <td className="text-sm p-4">{opportunity.businessName}</td>
-                      <td className="text-sm p-4">{opportunity.businessLine}</td>
-                      <td className="text-sm p-4">{opportunity.description}</td>
-                      <td className="text-sm p-4">{opportunity.estimatedValue}</td>
-                      <td className="text-sm p-4">{opportunity.estimatedDate}</td>
-                      <td className="py-2 px-3 text-center whitespace-nowrap w-[70px]">
-                      {(() => {
-                        const statusStyle = getStatusStyle(opportunity.status);  // Obtener estilo basado en el estado
-                        return (
-                          <span className={`inline-flex items-center justify-center px-2 py-1 rounded-full text-xs font-semibold ${statusStyle.textColor} ${statusStyle.bgColor}`}>
-                            {statusStyle.icon} <span className="ml-1">{opportunity.status}</span>
-                          </span>
+
+              {/* Para móviles */}
+              <div className="block lg:hidden">
+                {filteredOpportunities.length > 0 ? (
+                  <ul className="space-y-4">
+                    {filteredOpportunities.map((opportunity) => (
+                      <li
+                        key={opportunity.id}
+                        className="bg-white rounded-lg shadow-sm p-4 border hover:bg-gray-50 transition-all ease-in-out duration-200"
+                        role="listitem"
+                      >
+                        <div className="text-sm font-semibold text-gray-700">Nombre Negocio:</div>
+                        <div className="text-sm mb-2">{opportunity.businessName}</div>
+
+                        <div className="text-sm font-semibold text-gray-700">Línea de Negocio:</div>
+                        <div className="text-sm mb-2">{opportunity.businessLine}</div>
+
+                        <div className="text-sm font-semibold text-gray-700">Descripción:</div>
+                        <div className="text-sm mb-2">{opportunity.description}</div>
+
+                        <div className="text-sm font-semibold text-gray-700">Valor Estimado:</div>
+                        <div className="text-sm mb-2">{opportunity.estimatedValue}</div>
+
+                        <div className="text-sm font-semibold text-gray-700">Fecha Estimada:</div>
+                        <div className="text-sm mb-2">{opportunity.estimatedDate}</div>
+
+                        <div className="text-sm font-semibold text-gray-700">Estado:</div>
+                        <div className="py-2 px-3 text-center whitespace-nowrap w-[70px] mb-2">
+                          {(() => {
+                            const statusStyle = getStatusStyle(opportunity.status); // Obtener estilo basado en el estado
+                            return (
+                              <span
+                                className={`inline-flex items-center justify-center px-2 py-1 rounded-full text-xs font-semibold ${statusStyle.textColor} ${statusStyle.bgColor}`}
+                                role="status"
+                                aria-label={`Estado: ${opportunity.status}`}
+                              >
+                                {statusStyle.icon} <span className="ml-1">{opportunity.status}</span>
+                              </span>
                             );
                           })()}
-                        </td>
-                      <td className="p-4">
-                        <button
-                          className="text-blue-600 text-sm hover:text-blue-800 font-semibold transition-all duration-150 flex items-center"
-                          onClick={() => handleFollowUpClick(opportunity)}
-                          aria-expanded={showFollowUp}
-                          aria-controls="follow-up-section"
-                        >
-                          <FaArrowCircleRight className="mr-1" /> Seguimiento
-                        </button>
+                        </div>
+
+                        <div>
+                          <button
+                            className="text-blue-600 text-sm hover:text-blue-800 font-semibold transition-all duration-150 flex items-center"
+                            onClick={() => handleFollowUpClick(opportunity)}
+                            aria-expanded={showFollowUp}
+                            aria-controls="follow-up-section"
+                          >
+                            <FaArrowCircleRight className="mr-1" /> Seguimiento
+                          </button>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-center text-gray-500" aria-live="polite">
+                    No hay oportunidades disponibles para este cliente.
+                  </div>
+                )}
+                {showFollowUp && selectedOpportunity && (
+                <div id="follow-up-section" className="mt-6 transition-transform ease-in-out duration-300 transform scale-105">
+                  <SeguimientoOportunidad opportunity={selectedOpportunity} onClose={handleCloseFollowUp} />
+                </div>
+              )}
+            </div>
+
+
+
+            {/*Para desktop*/}
+            <div className="hidden lg:block">
+              <table className="w-full border-t bg-white rounded-lg shadow-sm">
+                <thead>
+                  <tr className="bg-gray-100 text-gray-600">
+                    <th className="p-4 text-left text-sm font-semibold">Nombre Negocio</th>
+                    <th className="p-4 text-left text-sm font-semibold">Línea de Negocio</th>
+                    <th className="p-4 text-left text-sm font-semibold">Descripción</th>
+                    <th className="p-4 text-left text-sm font-semibold">Valor Estimado</th>
+                    <th className="p-4 text-left text-sm font-semibold">Fecha Estimada</th>
+                    <th className="p-4 text-left text-sm font-semibold">Estado</th>
+                    <th className="p-4 text-left text-sm font-semibold">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredOpportunities.length > 0 ? (
+                    filteredOpportunities.map((opportunity) => {
+                      return (
+                        <tr key={opportunity.id} className="border-b hover:bg-gray-50 transition-all ease-in-out duration-150">
+                          <td className="text-sm p-4">{opportunity.businessName}</td>
+                          <td className="text-sm p-4">{opportunity.businessLine}</td>
+                          <td className="text-sm p-4">{opportunity.description}</td>
+                          <td className="text-sm p-4">{opportunity.estimatedValue}</td>
+                          <td className="text-sm p-4">{opportunity.estimatedDate}</td>
+                          <td className="py-2 px-3 text-center whitespace-nowrap w-[70px]">
+                          {(() => {
+                            const statusStyle = getStatusStyle(opportunity.status);  // Obtener estilo basado en el estado
+                            return (
+                              <span className={`inline-flex items-center justify-center px-2 py-1 rounded-full text-xs font-semibold ${statusStyle.textColor} ${statusStyle.bgColor}`}>
+                                {statusStyle.icon} <span className="ml-1">{opportunity.status}</span>
+                              </span>
+                                );
+                              })()}
+                            </td>
+                          <td className="p-4">
+                            <button
+                              className="text-blue-600 text-sm hover:text-blue-800 font-semibold transition-all duration-150 flex items-center"
+                              onClick={() => handleFollowUpClick(opportunity)}
+                              aria-expanded={showFollowUp}
+                              aria-controls="follow-up-section"
+                            >
+                              <FaArrowCircleRight className="mr-1" /> Seguimiento
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan={7} className="p-4 text-center text-gray-500">
+                        No hay oportunidades disponibles para este cliente.
                       </td>
                     </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={7} className="p-4 text-center text-gray-500">
-                    No hay oportunidades disponibles para este cliente.
-                  </td>
-                </tr>
+                  )}
+                </tbody>
+              </table>
+              {showFollowUp && selectedOpportunity && (
+                <div id="follow-up-section" className="mt-6 transition-transform ease-in-out duration-300 transform scale-105">
+                  <SeguimientoOportunidad opportunity={selectedOpportunity} onClose={handleCloseFollowUp} />
+                </div>
               )}
-            </tbody>
-          </table>
-          {showFollowUp && selectedOpportunity && (
-            <div id="follow-up-section" className="mt-6 transition-transform ease-in-out duration-300 transform scale-105">
-              <SeguimientoOportunidad opportunity={selectedOpportunity} onClose={handleCloseFollowUp} />
             </div>
-          )}
-        </div>
+
+
+          </div>
       </div>
     </div>
   );

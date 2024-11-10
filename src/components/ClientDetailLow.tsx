@@ -49,7 +49,7 @@ const ClientDetailLow: React.FC<{ opportunity: Opportunity; onClose: () => void 
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center">
                     <FaClipboardList className="mr-3 text-blue-600 text-2xl" />
-                    <h4 className="text-xl font-semibold">Seguimiento de: {opportunity.businessLine}</h4>
+                    <h4 className="text-xl font-semibold flex items-center">Seguimiento de: {opportunity.businessLine}</h4>
                 </div>
                 <button
                     onClick={onClose}
@@ -82,6 +82,7 @@ const ClientDetailLow: React.FC<{ opportunity: Opportunity; onClose: () => void 
                 </span>
             </div>
 
+            <div className="hidden lg:block">
             {/* Tabla de Seguimientos */}
             <table className="min-w-full bg-gray-100 border border-gray-300 rounded-lg shadow-md">
                 <thead className="bg-gray-50 text-gray-600">
@@ -101,6 +102,25 @@ const ClientDetailLow: React.FC<{ opportunity: Opportunity; onClose: () => void 
                     ))}
                 </tbody>
             </table>
+            </div>
+
+            <div className="block lg:hidden">
+            <div className="space-y-4">
+                {followUps.map((followUp) => (
+                    <div
+                        key={followUp.id}
+                        className="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-4"
+                    >
+                        <div className="text-sm font-semibold text-gray-600">
+                            <p><strong>Fecha:</strong> {followUp.date}</p>
+                            <p><strong>Tipo de Seguimiento:</strong> {followUp.followUpType}</p>
+                            <p><strong>Notas:</strong> {followUp.notes}</p>
+                        </div>
+                    </div>
+                ))}
+            </div>
+            </div>
+
         </div>
     );
 };
