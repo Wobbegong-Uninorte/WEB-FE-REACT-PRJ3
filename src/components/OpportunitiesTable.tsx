@@ -5,7 +5,6 @@ import 'tailwindcss/tailwind.css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 interface Opportunity {
   id: string;
-  clientName: string;
   businessName: string;
   businessLine: string;
   description: string;
@@ -109,7 +108,6 @@ const OpportunitiesTable = () => {
         <table className="table-auto bg-white w-full rounded-md">
           <thead>
             <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
-              <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[80px]">Cliente</th>
               <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[100px]">Nombre Negocio</th>
               <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[90px]">Línea Negocio</th>
               <th className="py-3 px-2 text-center font-semibold w-[200px]">Descripción</th>
@@ -125,7 +123,6 @@ const OpportunitiesTable = () => {
                 key={opportunity.id}
                 className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-100 text-sm text-gray-600 hover:bg-gray-50/50 transition-colors duration-150`}
               >
-                <td className="py-4 px-2 text-center whitespace-nowrap w-[80px]">{opportunity.clientName}</td>
                 <td className="py-4 px-2 text-center whitespace-nowrap w-[100px] cursor-pointer hover:text-gray-800" 
                     onClick={() => handleOpportunityClick(opportunity)}>
                   {opportunity.businessName}
