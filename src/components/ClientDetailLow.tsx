@@ -4,8 +4,12 @@ interface Opportunity {
     id: string;
     description: string;
     status: string;
+    businessName: string;
+    businessLine: string;
+    estimatedValue: number;
+    estimatedDate: string;
     clientId: string;
-}
+  }
 
 interface FollowUp {
     id: string;
@@ -29,7 +33,7 @@ const ClientDetailLow: React.FC<{ opportunity: Opportunity; onClose: () => void 
         <div className="container mx-auto p-4 ">
             <div className="mt-8 p-6 border-t border-gray-300">
                 <div className="flex justify-between items-center mb-4">
-                    <h4 className="text-xl font-semibold text-gray-800">Seguimiento de: {opportunity.description}</h4>
+                    <h4 className="text-xl font-semibold text-gray-800">Seguimiento de: {opportunity.businessLine}</h4>
                     <button 
                         onClick={onClose} 
                         className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded" 

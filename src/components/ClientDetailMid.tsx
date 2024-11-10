@@ -16,14 +16,13 @@ interface Client {
 
 interface Opportunity {
   id: string;
+  description: string;
+  status: string;
   businessName: string;
   businessLine: string;
-  description: string;
   estimatedValue: number;
   estimatedDate: string;
-  status: string;
-  clientId: string; // Incluye clientId en la definición
-
+  clientId: string;
 }
 
 const ClientDetails: React.FC = () => {
@@ -31,43 +30,44 @@ const ClientDetails: React.FC = () => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedClientId] = useState<string>('1'); // Cambia el ID según el cliente seleccionado
+  const [selectedClientId, setSelectedClientId] = useState<string>('');
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
   const [showFollowUp, setShowFollowUp] = useState(false);
 
   useEffect(() => {
-    const fetchClientsAndOpportunities = async () => {
+    const savedClient = localStorage.getItem('selectedClient');
+    if (savedClient) {
+      const client = JSON.parse(savedClient);
+      setSelectedClientId(client.id);
+    }
+
+    const fetchClients = async () => {
       setLoading(true);
       setError(null);
-
       try {
-        // Fetch clients
-        const clientsResponse = await fetch('https://web-fe-react-prj3-api.onrender.com/clients');
-        const clientsData = await clientsResponse.json();
-        const clientsList = Array.isArray(clientsData) ? clientsData : [clientsData];
-        setClients(clientsList);
-        
-        // Fetch all opportunities from API
-        const opportunitiesResponse = await fetch('https://web-fe-react-prj3-api.onrender.com/opportunities');
-        const allOpportunitiesData = await opportunitiesResponse.json();
-        setOpportunities(allOpportunitiesData);
+        const response = await fetch('https://web-fe-react-prj3-api.onrender.com/clients');
+        const data = await response.json();
+        setClients(Array.isArray(data) ? data : [data]);
       } catch (error) {
-        console.error('Error fetching clients or opportunities:', error);
-        setError('No se pudieron cargar los datos.');
+        console.error('Error fetching clients:', error);
+        setError('No se pudieron cargar los clientes.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchClientsAndOpportunities();
+    const fetchOpportunities = async () => {
+      const response = await fetch('https://web-fe-react-prj3-api.onrender.com/opportunities');
+      const data = await response.json();
+      setOpportunities(data);
+    };
+
+    fetchClients();
+    fetchOpportunities();
   }, []);
 
-  // Buscar el cliente seleccionado
-  const selectedClient = clients.find(client => client.id === selectedClientId);
-
-  // Filtrar oportunidades que corresponden al cliente seleccionado
-  const filteredOpportunities = opportunities.filter(opportunity => 
-    selectedClient?.opportunities.includes(opportunity.id)
+  const filteredOpportunities = opportunities.filter(opportunity =>
+    clients.some(client => client.id === selectedClientId && client.opportunities.includes(opportunity.id))
   );
 
   const handleFollowUpClick = (opportunity: Opportunity) => {
@@ -96,7 +96,7 @@ const ClientDetails: React.FC = () => {
               <span className="w-5 h-5 text-gray-500">{/* Icono de ciudad aquí */}</span>
               <div>
                 <p className="text-sm text-gray-500">Ciudad</p>
-                <p className="font-medium">{selectedClient?.city}</p>
+                <p className="font-medium">{clients.find(client => client.id === selectedClientId)?.city}</p>
               </div>
             </div>
           </div>
@@ -105,7 +105,7 @@ const ClientDetails: React.FC = () => {
           <table className="w-full border-t">
             <thead>
               <tr>
-                <th className="p-2 text-left text-sm font-semibold text-gray-600">Nombre del Negocio</th>
+                <th className="p-2 text-left text-sm font-semibold text-gray-600">Nombre Negocio</th>
                 <th className="p-2 text-left text-sm font-semibold text-gray-600">Línea de Negocio</th>
                 <th className="p-2 text-left text-sm font-semibold text-gray-600">Descripción</th>
                 <th className="p-2 text-left text-sm font-semibold text-gray-600">Valor Estimado</th>
@@ -116,7 +116,7 @@ const ClientDetails: React.FC = () => {
             </thead>
             <tbody>
               {filteredOpportunities.length > 0 ? (
-                filteredOpportunities.map(opportunity => (
+                filteredOpportunities.map((opportunity) => (
                   <tr key={opportunity.id} className="border-b">
                     <td className="p-2">{opportunity.businessName}</td>
                     <td className="p-2">{opportunity.businessLine}</td>
