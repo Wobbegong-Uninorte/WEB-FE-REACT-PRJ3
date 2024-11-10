@@ -1,28 +1,49 @@
-// src/pages/CreateClient.tsx
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import ClientForm from '../components/ClientList';
-import { createClient } from '../services/clientServices';
-import { ClientType } from '../types/clients';
-import MainLayout from '../layouts/MainLayout';
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ClientForm from "../components/ClientForm";
+import { createClient } from "../services/clientServices";
+import { ClientType } from "../types/clients";
+import MainLayout from "../layouts/MainLayout";
 
 const CreateClient: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleCreateClient = async (client: ClientType) => {
+  const initialClientState: ClientType = {
+    id: null,
+    nit: "",
+    name: "",
+    address: "",
+    city: "",
+    country: "",
+    phone: "",
+    email: "",
+    active: true,
+    contacts: [],
+  };
+
+  const [client, setClient] = useState<ClientType>(initialClientState);
+
+  const handleClientChange = (updatedClient: ClientType) => {
+    setClient(updatedClient);
+  };
+
+  const handleCreateClient = async () => {
     try {
       await createClient(client);
-      alert('Cliente creado con éxito');
-      navigate('/'); // Redirige de vuelta a la página de inicio después de crear el cliente
+      alert("Cliente y contactos creados con éxito");
+      navigate("/"); // Redirige de vuelta a la página de inicio después de crear el cliente
     } catch (error) {
       console.log("Error creando cliente: ", error);
     }
   };
 
   return (
-    <MainLayout> 
-      <ClientForm onSubmit={handleCreateClient} />
+    <MainLayout>
+      <ClientForm
+        client={client}
+        onChange={handleClientChange}
+        onSubmit={handleCreateClient}
+      />
     </MainLayout>
   );
 };

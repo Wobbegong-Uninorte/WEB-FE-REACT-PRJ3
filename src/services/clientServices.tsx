@@ -1,4 +1,4 @@
-// src/services/clientServices.ts
+
 import { ClientType } from '../types/clients';
 
 const API_URL = 'https://web-fe-react-prj3-api.onrender.com';
