@@ -1,28 +1,73 @@
-// src/pages/CreateOpportunity.tsx
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import OpportunityForm from "../components/OpportunityForm";
 import { createOpportunity } from "../services/opportunityServices";
+import { addOpportunityToClient } from "../services/clientServices";
 import { Opportunities } from "../types/opportunities";
+import { ClientType } from "../types/clients";
 import MainLayout from "../layouts/MainLayout";
 
 const CreateOpportunity: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleCreateOpportunity = async (opportunity: Opportunities) => {
+  const initialOpportunityState: Opportunities = {
+    client: "",
+    businessName: "",
+    businessLine: "outsourcing recursos",
+    description: "",
+    estimatedValue: 0,
+    estimatedDate: new Date(),
+    status: "Apertura",
+  };
+
+  const [opportunity, setOpportunity] = useState<Opportunities>(initialOpportunityState);
+  const [clients, setClients] = useState<ClientType[]>([]);
+
+  const handleOpportunityChange = (updatedOpportunity: Opportunities) => {
+    setOpportunity(updatedOpportunity);
+  };
+
+  const handleCreateOpportunity = async () => {
     try {
       await createOpportunity(opportunity);
-      alert("Oportunidad creada con éxito");
-      navigate("/OpportunitiesPage"); // Redirige de vuelta a la página de lista de oportunidades después de crear la oportunidad
+
+      const selectedClient = clients.find((client) => client.name === opportunity.client);
+
+      if (selectedClient) {
+        await addOpportunityToClient(selectedClient.id, opportunity);
+
+        alert("Oportunidad creada y asociada al cliente con éxito");
+        navigate("/OpportunitiesPage");
+      } else {
+        alert("Cliente no encontrado");
+      }
     } catch (error) {
       console.log("Error creando oportunidad: ", error);
     }
   };
 
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await fetch("https://web-fe-react-prj3-api.onrender.com/clients");
+        const data = await response.json();
+        setClients(data);
+      } catch (error) {
+        console.log("Error al cargar los clientes:", error);
+      }
+    };
+
+    fetchClients();
+  }, []);
+
   return (
     <MainLayout>
-      <OpportunityForm onSubmit={handleCreateOpportunity} />
+      <OpportunityForm
+        opportunity={opportunity}
+        clients={clients}
+        onChange={handleOpportunityChange}
+        onSubmit={handleCreateOpportunity}
+      />
     </MainLayout>
   );
 };

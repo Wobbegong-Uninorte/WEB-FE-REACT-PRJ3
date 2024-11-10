@@ -1,145 +1,112 @@
 // src/components/OpportunityForm.tsx
 
-import React, { useState } from "react";
+import React from "react";
+import { TextField, Box, Button, MenuItem, FormControl, InputLabel, Select, SelectChangeEvent } from "@mui/material";
 import { Opportunities } from "../types/opportunities";
 
-type OpportunityFormProps = {
-  onSubmit: (opportunity: Opportunities) => void;
+type Client = {
+  id: number;
+  name: string;
 };
 
-const OpportunityForm: React.FC<OpportunityFormProps> = ({ onSubmit }) => {
-  const [opportunity, setOpportunity] = useState<Opportunities>({
-    client: "",
-    businessName: "",
-    businessLine: "outsourcing recursos",
-    description: "",
-    estimatedValue: 0,
-    estimatedDate: new Date(),
-    status: "Apertura",
-  });
+type OpportunityFormProps = {
+  opportunity: Opportunities;
+  clients: Client[];
+  onChange: (updatedOpportunity: Opportunities) => void;
+  onSubmit: () => void;
+};
 
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) => {
+const OpportunityForm: React.FC<OpportunityFormProps> = ({ opportunity, clients, onChange, onSubmit }) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setOpportunity({ ...opportunity, [name]: value });
+    onChange({ ...opportunity, [name]: value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit(opportunity);
+  const handleSelectChange = (e: SelectChangeEvent<string>) => {
+    const { name, value } = e.target as { name: string; value: string };
+    onChange({ ...opportunity, [name]: value });
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 p-6">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md p-6 bg-white shadow-lg rounded-md space-y-6"
-      >
-        <h2 className="text-3xl font-semibold text-center text-gray-800">
-          Crear Oportunidad
-        </h2>
+    <Box component="form" sx={{ display: "flex", flexDirection: "column", gap: 2 }} onSubmit={(e) => { e.preventDefault(); onSubmit(); }}>
+      <h2>Crear Oportunidad</h2>
 
-        <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Cliente
-          </label>
-          <select
-            name="client"
-            value={opportunity.client}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:border-gray-600"
-          >
-            <option value="">Seleccionar Cliente</option>
-            <option value="Cliente1">Cliente 1</option>
-            <option value="Cliente2">Cliente 2</option>
-            {/* Agrega opciones dinámicas de clientes si están disponibles */}
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Nombre de Negocio
-          </label>
-          <input
-            type="text"
-            name="businessName"
-            value={opportunity.businessName}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:border-gray-600"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Línea de Negocio
-          </label>
-          <select
-            name="businessLine"
-            value={opportunity.businessLine}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:border-gray-600"
-          >
-            <option value="outsourcing recursos">Outsourcing Recursos</option>
-            <option value="desarrollo web">Desarrollo Web</option>
-            <option value="desarrollo mobile">Desarrollo Mobile</option>
-            <option value="consultoría TI">Consultoría TI</option>
-          </select>
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Descripción
-          </label>
-          <textarea
-            name="description"
-            value={opportunity.description}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:border-gray-600"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Valor Estimado
-          </label>
-          <input
-            type="number"
-            name="estimatedValue"
-            value={opportunity.estimatedValue}
-            onChange={handleInputChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:border-gray-600"
-          />
-        </div>
-
-        <div className="mb-4">
-          <label className="block mb-1 text-sm font-medium text-gray-700">
-            Fecha Estimada de Realización
-          </label>
-          <input
-            type="date"
-            name="estimatedDate"
-            value={opportunity.estimatedDate.toISOString().split("T")[0]}
-            onChange={(e) =>
-              setOpportunity({
-                ...opportunity,
-                estimatedDate: new Date(e.target.value),
-              })
-            }
-            className="w-full px-4 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:border-gray-600"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="w-full py-3 text-white bg-gray-800 rounded-md hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-opacity-50"
+      <FormControl fullWidth required>
+        <InputLabel>Cliente</InputLabel>
+        <Select
+          name="client"
+          value={opportunity.client}
+          onChange={handleSelectChange}
+          label="Cliente"
         >
-          Crear Oportunidad
-        </button>
-      </form>
-    </div>
+          <MenuItem value="">Seleccionar Cliente</MenuItem>
+          {clients.map((client) => (
+            <MenuItem key={client.id} value={client.name}>
+              {client.name}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <TextField
+        label="Nombre de Negocio"
+        name="businessName"
+        value={opportunity.businessName}
+        onChange={handleInputChange}
+        fullWidth
+        required
+      />
+
+      <FormControl fullWidth required>
+        <InputLabel>Línea de Negocio</InputLabel>
+        <Select
+          name="businessLine"
+          value={opportunity.businessLine}
+          onChange={handleSelectChange}
+          label="Línea de Negocio"
+        >
+          <MenuItem value="outsourcing recursos">Outsourcing Recursos</MenuItem>
+          <MenuItem value="desarrollo web">Desarrollo Web</MenuItem>
+          <MenuItem value="desarrollo mobile">Desarrollo Mobile</MenuItem>
+          <MenuItem value="consultoría TI">Consultoría TI</MenuItem>
+        </Select>
+      </FormControl>
+
+      <TextField
+        label="Descripción"
+        name="description"
+        value={opportunity.description}
+        onChange={handleInputChange}
+        multiline
+        rows={4}
+        fullWidth
+      />
+
+      <TextField
+        label="Valor Estimado"
+        name="estimatedValue"
+        type="number"
+        value={opportunity.estimatedValue}
+        onChange={handleInputChange}
+        fullWidth
+        required
+      />
+
+      <TextField
+        label="Fecha Estimada de Realización"
+        name="estimatedDate"
+        type="date"
+        value={opportunity.estimatedDate.toISOString().split("T")[0]}
+        onChange={(e) => onChange({ ...opportunity, estimatedDate: new Date(e.target.value) })}
+        InputLabelProps={{ shrink: true }}
+        fullWidth
+        required
+      />
+
+      <Button type="submit" variant="contained" color="primary" sx={{ marginTop: 4 }}>
+        Guardar Oportunidad
+      </Button>
+    </Box>
   );
 };
 

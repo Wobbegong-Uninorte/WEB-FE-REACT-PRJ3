@@ -1,3 +1,4 @@
+import { Opportunities } from "./opportunities";
 export type ContactType = {
   firstName: string;
   lastName: string;
@@ -6,7 +7,7 @@ export type ContactType = {
 };
 
 export type ClientType = {
-  id: number | null;
+  id: number;
   nit: string;
   name: string;
   address: string;
@@ -15,11 +16,11 @@ export type ClientType = {
   phone: string;
   email: string;
   active: boolean;
-  opportunities?: Opportunity[];
-  contacts: ContactType[]; 
+  opportunities?: Opportunities[];
+  contacts: ContactType[];
 };
 
-  export type Opportunity = { 
-    id: number;
-    name: string;
-  }
+export type Opportunity = {
+  id: number;
+  name: string;
+};
