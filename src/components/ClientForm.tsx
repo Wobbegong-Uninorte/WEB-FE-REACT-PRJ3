@@ -15,29 +15,30 @@ const ClientForm: React.FC<ClientFormProps> = ({ client, onChange, onSubmit }) =
     email: '',
     phone: '',
   });
-
   const [contacts, setContacts] = useState<ContactType[]>(client.contacts || []);
+  const [contactError, setContactError] = useState(false);
 
-  // Maneja los cambios en los campos del cliente
   const handleClientInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     onChange({ ...client, [name]: value });
   };
 
-  // Maneja los cambios en los campos del contacto
   const handleContactInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setContact({ ...contact, [name]: value });
   };
 
-  // Añade el contacto al arreglo de contactos y limpia el formulario de contacto
   const handleAddContact = () => {
+    if (!contact.firstName || !contact.lastName || !contact.email || !contact.phone) {
+      setContactError(true);
+      return;
+    }
     setContacts([...contacts, contact]);
     setContact({ firstName: '', lastName: '', email: '', phone: '' });
-    onChange({ ...client, contacts: [...contacts, contact] }); // Actualiza el estado de contactos en el cliente
+    onChange({ ...client, contacts: [...contacts, contact] });
+    setContactError(false);
   };
 
-  // Maneja el cambio del checkbox de activo
   const handleActiveChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange({ ...client, active: e.target.checked });
   };
@@ -46,7 +47,6 @@ const ClientForm: React.FC<ClientFormProps> = ({ client, onChange, onSubmit }) =
     <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2 }} onSubmit={(e) => { e.preventDefault(); onSubmit(); }}>
       <h2>Crear Cliente</h2>
 
-      {/* Campos del Cliente */}
       <TextField label="ID" name="id" type="number" value={client.id} onChange={handleClientInputChange} fullWidth required />
       <TextField label="NIT" name="nit" type="number" value={client.nit} onChange={handleClientInputChange} fullWidth required />
       <TextField label="Nombre" name="name" type="text" value={client.name} onChange={handleClientInputChange} fullWidth required />
@@ -60,18 +60,48 @@ const ClientForm: React.FC<ClientFormProps> = ({ client, onChange, onSubmit }) =
         label="Activo"
       />
 
-      {/* Sección para Agregar Contactos */}
       <h3>Agregar Contacto</h3>
-      <TextField label="Nombre" name="firstName" type="text" value={contact.firstName} onChange={handleContactInputChange} fullWidth required />
-      <TextField label="Apellido" name="lastName" type="text" value={contact.lastName} onChange={handleContactInputChange} fullWidth required />
-      <TextField label="Correo Electrónico" name="email" type="email" value={contact.email} onChange={handleContactInputChange} fullWidth required />
-      <TextField label="Teléfono" name="phone" type="tel" value={contact.phone} onChange={handleContactInputChange} fullWidth required />
-      
+      <TextField
+        label="Nombre"
+        name="firstName"
+        type="text"
+        value={contact.firstName}
+        onChange={handleContactInputChange}
+        fullWidth
+        error={contactError && !contact.firstName}
+      />
+      <TextField
+        label="Apellido"
+        name="lastName"
+        type="text"
+        value={contact.lastName}
+        onChange={handleContactInputChange}
+        fullWidth
+        error={contactError && !contact.lastName}
+      />
+      <TextField
+        label="Correo Electrónico"
+        name="email"
+        type="email"
+        value={contact.email}
+        onChange={handleContactInputChange}
+        fullWidth
+        error={contactError && !contact.email}
+      />
+      <TextField
+        label="Teléfono"
+        name="phone"
+        type="tel"
+        value={contact.phone}
+        onChange={handleContactInputChange}
+        fullWidth
+        error={contactError && !contact.phone}
+      />
+
       <Button variant="outlined" onClick={handleAddContact} sx={{ marginTop: 2 }}>
         Agregar Contacto
       </Button>
 
-      {/* Lista de Contactos Agregados */}
       {contacts.length > 0 && (
         <Box sx={{ marginTop: 2 }}>
           <h4>Lista de Contactos:</h4>
@@ -83,8 +113,7 @@ const ClientForm: React.FC<ClientFormProps> = ({ client, onChange, onSubmit }) =
         </Box>
       )}
 
-      {/* Botón para Guardar Cliente y Contactos */}
-      <Button type="submit" variant="contained" color="primary" sx={{ marginTop: 4 }}>
+      <Button type="submit" variant="contained" color="primary" sx={{ marginTop: 4 }} disabled={contacts.length === 0}>
         Guardar Cliente y Contactos
       </Button>
     </Box>
