@@ -123,7 +123,7 @@ const OpportunitiesTable = () => {
             {currentOpportunities.map((opportunity, index) => (
               <tr 
                 key={opportunity.id}
-                className={`border-b border-gray-100 text-sm text-gray-600 hover:bg-gray-50/50 transition-colors duration-150`}
+                className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-100 text-sm text-gray-600 hover:bg-gray-50/50 transition-colors duration-150`}
               >
                 <td className="py-4 px-2 text-center whitespace-nowrap w-[80px]">{opportunity.clientName}</td>
                 <td className="py-4 px-2 text-center whitespace-nowrap w-[100px] cursor-pointer hover:text-gray-800" 
