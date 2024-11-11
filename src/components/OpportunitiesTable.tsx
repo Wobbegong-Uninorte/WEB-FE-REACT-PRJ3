@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
-import 'tailwindcss/tailwind.css';
+import DeleteOpportunityDialog from './DeleteOpportunityDialog';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+
 interface Opportunity {
   id: string;
   businessName: string;
@@ -32,19 +33,43 @@ const OpportunitiesTable = () => {
         throw new Error(`Error al obtener las oportunidades: ${response.statusText}`);
       }
       const data = await response.json();
-      console.log('Datos recibidos:', data);
-
-      if (Array.isArray(data)) {
-        setOpportunities(data);
-      } else {
-        setOpportunities([data]);
-      }
+      
+      setOpportunities(Array.isArray(data) ? data : [data]);
       setError(null);
     } catch (error) {
       console.error('Error al obtener las oportunidades:', error);
       setError('Error al cargar los datos');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteOpportunity = async (id: string) => {
+    try {
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/opportunities/${id}`, {
+        method: 'DELETE',
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error al eliminar la oportunidad: ${response.statusText}`);
+      }
+  
+      // Asegúrate de que la respuesta fue exitosa y filtra la oportunidad correctamente
+      setOpportunities(prevOpportunities => {
+        const updatedOpportunities = prevOpportunities.filter(opp => opp.id !== id);
+        console.log('Oportunidades actualizadas:', updatedOpportunities); // Verifica la lista después de la eliminación
+        return updatedOpportunities;
+      });
+  
+      // Ajustar la página si es necesario
+      const remainingItems = opportunities.length - 1;
+      const maxPages = Math.ceil(remainingItems / resultsPerPage);
+      if (currentPage >= maxPages) {
+        setCurrentPage(Math.max(0, maxPages - 1));
+      }
+    } catch (error) {
+      console.error('Error al eliminar la oportunidad:', error);
+      setError('Error al eliminar la oportunidad');
     }
   };
 
@@ -153,12 +178,11 @@ const OpportunitiesTable = () => {
                     >
                       Actualizar
                     </button>
-                    <button 
-                      className="bg-[#00BCD4] text-white px-3 py-1 rounded-r-full flex items-center justify-center text-sm hover:bg-[#0097A7] transition-colors duration-200"
-                      onClick={() => {/* Función para eliminar */}}
-                    >
-                      Eliminar
-                    </button>
+                    <DeleteOpportunityDialog
+                      opportunityId={opportunity.id}
+                      opportunityDescription={opportunity.description}
+                      onDelete={handleDeleteOpportunity}
+                    />
                   </div>
                 </td>
               </tr>
@@ -177,7 +201,6 @@ const OpportunitiesTable = () => {
         activeClassName="bg-blue-500 text-white font-semibold border border-blue-600"
         previousClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
         nextClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
-        disabledClassName="opacity-50 cursor-not-allowed"
       />
     </div>
   );
