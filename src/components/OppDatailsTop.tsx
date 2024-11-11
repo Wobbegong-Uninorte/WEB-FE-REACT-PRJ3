@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { ArrowLeft, UserCircle, Building2, DollarSign, Calendar, MapPin } from 'lucide-react';
+import { ArrowLeft, UserCircle, Building2, DollarSign, Calendar} from 'lucide-react';
 import { IoMdCheckmarkCircle, IoMdCloseCircle } from 'react-icons/io';
 import { FaSyncAlt, FaArrowCircleRight } from 'react-icons/fa';
 import { AiOutlineFileText } from "react-icons/ai"
+
 interface Opportunity {
     id: string;
     businessName: string;
@@ -30,7 +31,7 @@ const getStatusStyle = (status: string) => {
     }
 };
 
-const OpportunityDetailsPage: React.FC = () => {
+const OppDetailsTop: React.FC = () => {
     const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
     const navigate = useNavigate();
 
@@ -123,4 +124,4 @@ const OpportunityDetailsPage: React.FC = () => {
     );
 };
 
-export default OpportunityDetailsPage;
+export default OppDetailsTop;
