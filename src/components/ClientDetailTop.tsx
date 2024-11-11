@@ -1,9 +1,18 @@
+//ClientDetailTop.tsx
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { ArrowLeft, User, Building, Phone, Mail, MapPin, Globe} from 'lucide-react';
+import { ArrowLeft, User, Building, Phone, Mail, MapPin, Globe, Group} from 'lucide-react';
 import { FaUser, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
 
+
+interface Contact {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
 
 interface Client {
   id: string;
@@ -15,6 +24,7 @@ interface Client {
   phone: string;
   email: string;
   active: boolean;
+  contacts?: Contact[]; // Agregar la propiedad contacts
 }
 
 const ClientDetailTop = () => {
@@ -115,6 +125,27 @@ const ClientDetailTop = () => {
               <p className="font-medium">{client.country}</p>
             </div>
           </div>
+
+          <div className="flex items-start space-x-3">
+            <Group className="w-5 h-5 text-gray-500" />
+            <div>
+              <p className="text-sm text-gray-500">Contactos</p>
+              <div className="flex space-x-4 mt-3">
+              {client.contacts?.map((contact, index) => (
+              <div
+              key={index}
+              className="p-4 mt-3 border border-gray-200 rounded-md shadow-sm space-y-1"
+              >
+                <p className="font-medium">Nombre: <p className="text-sm text-gray-500">{contact.firstName}</p></p>
+                <p className="font-medium">Apellido: <p className="text-sm text-gray-500">{contact.lastName}</p></p>
+                <p className="font-medium">Email: <p className="text-sm text-gray-500">{contact.email}</p></p>
+                <p className="font-medium">Phone: <p className="text-sm text-gray-500">{contact.phone}</p></p>
+              </div>
+              ))}
+            </div>
+            </div>
+          </div>
+
         </CardContent>
       </Card>
     </div>
