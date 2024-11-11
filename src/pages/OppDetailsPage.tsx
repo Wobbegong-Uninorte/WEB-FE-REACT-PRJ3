@@ -6,7 +6,11 @@ const OppDetailsPage: React.FC = () => {
     
     return (
         <MainLayout>
-            <OppDetailsTop />
+            <div className="bg-[#f3f4f6]">
+                <h1 className="text-2xl font-bold text-center pt-6">Información de la Oportunidad</h1>
+                <OppDetailsTop />
+            </div>
+            
         </MainLayout>
     );
 };
