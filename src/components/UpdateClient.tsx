@@ -1,6 +1,11 @@
 import { useState } from 'react';
 
-interface Contact {
+interface Opportunity {
+  id: number;
+  name: string;
+}
+
+interface ContactType {
   firstName: string;
   lastName: string;
   email: string;
@@ -8,7 +13,7 @@ interface Contact {
 }
 
 interface Client {
-  id: string;
+  id: number;
   nit: string;
   name: string;
   address: string;
@@ -17,8 +22,8 @@ interface Client {
   phone: string;
   email: string;
   active: boolean;
-  contacts: Contact[];
-  opportunities: string[];
+  opportunities?: Opportunity[];
+  contacts: ContactType[];
 }
 
 interface UpdateClientProps {
@@ -31,7 +36,7 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
   const [formData, setFormData] = useState<Client>(client);
   const [error, setError] = useState<string | null>(null);
   const [selectedContactIndex, setSelectedContactIndex] = useState<number | null>(null);
-  const [contactFormData, setContactFormData] = useState<Contact | null>(null);
+  const [contactFormData, setContactFormData] = useState<ContactType | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
