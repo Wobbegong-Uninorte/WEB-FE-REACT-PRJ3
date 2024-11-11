@@ -7,6 +7,12 @@ import 'tailwindcss/tailwind.css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import UpdateClient from './UpdateClient';
 
+interface Contact {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
 
 interface Client {
   id: string;
@@ -18,6 +24,8 @@ interface Client {
   phone: string;
   email: string;
   active: boolean;
+  contacts: Contact[];
+  opportunities: string[];
 }
 
 const ClientsTable = () => {
