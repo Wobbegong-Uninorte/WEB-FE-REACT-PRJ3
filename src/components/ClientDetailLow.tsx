@@ -13,11 +13,18 @@ interface Opportunity {
     clientId: string;
 }
 
-interface FollowUp {
-    id: string;
-    date: string;
-    notes: string;
-    followUpType: string;
+interface FollowUpActivity {
+    contactType: string;
+    contactDate: string;
+    clientContact: {
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone: string;
+    };
+    salesExecutive: string;
+    description: string;
+    additionalNotes: string;
 }
 
 interface ClientDetailLowProps {
@@ -26,15 +33,22 @@ interface ClientDetailLowProps {
 }
 
 const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose }) => {
-    const [followUps, setFollowUps] = useState<FollowUp[]>([]);
+    const [followUps, setFollowUps] = useState<FollowUpActivity[]>([]);
 
     useEffect(() => {
-        const sampleFollowUps: FollowUp[] = [
-            { id: '1', date: '2023-01-15', notes: 'Reunión inicial con el cliente', followUpType: 'Reunión' },
-            { id: '2', date: '2023-01-22', notes: 'Llamada de seguimiento', followUpType: 'Llamada' },
-            { id: '3', date: '2023-02-05', notes: 'Demo del producto', followUpType: 'Demo' },
-        ];
-        setFollowUps(sampleFollowUps);
+        const fetchFollowUps = async () => {
+            try {
+                const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
+                const data = await response.json();
+                
+                const followUpData = data.find((follow: any) => follow.opportunityId === opportunity.id);
+                setFollowUps(followUpData ? followUpData.followUpActivities : []);
+            } catch (error) {
+                console.error('Error fetching follow-up activities:', error);
+            }
+        };
+
+        fetchFollowUps();
     }, [opportunity]);
 
     const handleDeleteOpportunity = async (id: string) => {
@@ -46,7 +60,6 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
             if (!response.ok) {
                 throw new Error(`Error al eliminar la oportunidad: ${response.statusText}`);
             }
-
 
             onClose();
         } catch (error) {
@@ -118,20 +131,34 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
 
             <div className="hidden lg:block">
                 {/* Tabla de Seguimientos */}
-                <table className="min-w-full bg-gray-100 border border-gray-300 rounded-lg shadow-md">
-                    <thead className="bg-gray-50 text-gray-600">
+                <table className="w-full border-t bg-white rounded-lg shadow-sm">
+                    <thead className="bg-gray-100 text-gray-600">
                         <tr>
-                            <th className="px-4 py-2 text-left text-sm font-semibold">Fecha</th>
-                            <th className="px-4 py-2 text-left text-sm font-semibold">Tipo de Seguimiento</th>
-                            <th className="px-4 py-2 text-left text-sm font-semibold">Notas</th>
+                            <th className="p-4 text-left text-sm font-semibold">Fecha</th>
+                            <th className="p-4 text-left text-sm font-semibold">Tipo de Contacto</th>
+                            <th className="p-4 text-left text-sm font-semibold">Ejecutivo</th>
+                            <th className="p-4 text-left text-sm font-semibold">Contacto del Cliente</th>
+                            <th className="p-4 text-left text-sm font-semibold">Descripción</th>
+                            <th className="p-4 text-left text-sm font-semibold">Notas Adicionales</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {followUps.map((followUp) => (
-                            <tr key={followUp.id} className="hover:bg-gray-200 transition duration-300">
-                                <td className="px-4 py-3 text-sm text-gray-700">{followUp.date}</td>
-                                <td className="px-4 py-3 text-sm text-gray-700">{followUp.followUpType}</td>
-                                <td className="px-4 py-3 text-sm text-gray-700">{followUp.notes}</td>
+                        {followUps.map((followUp, index) => (
+                            <tr key={index} className="hover:bg-gray-200 transition duration-300">
+                                <td className="px-4 py-3 text-sm text-gray-700">{followUp.contactDate}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{followUp.contactType}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{followUp.salesExecutive}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">
+                                    {`${followUp.clientContact.firstName} ${followUp.clientContact.lastName}`}
+                                    <br />
+                                    <a href={`mailto:${followUp.clientContact.email}`} className="text-blue-600 underline">
+                                        {followUp.clientContact.email}
+                                    </a>
+                                    <br />
+                                    <span>{followUp.clientContact.phone}</span>
+                                </td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{followUp.description}</td>
+                                <td className="px-4 py-3 text-sm text-gray-700">{followUp.additionalNotes}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -141,19 +168,36 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
             <div className="block lg:hidden">
                 <div className="space-y-4">
                     {followUps.map((followUp) => (
-                        <div
-                            key={followUp.id}
-                            className="bg-gray-100 border border-gray-300 rounded-lg shadow-md p-4"
-                        >
-                            <div className="text-sm font-semibold text-gray-600">
-                                <p><strong>Fecha:</strong> {followUp.date}</p>
-                                <p><strong>Tipo de Seguimiento:</strong> {followUp.followUpType}</p>
-                                <p><strong>Notas:</strong> {followUp.notes}</p>
-                            </div>
-                        </div>
-                    ))}
+                <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4">
+                <div className="mb-2 text-xs font-semibold text-gray-500 uppercase">
+                    {followUp.contactDate}
+                </div>
+                <div className="flex justify-between items-center text-sm text-gray-700 mb-4">
+                    <p className="mr-4"><strong>Tipo:</strong> {followUp.contactType}</p>
+                    <p><strong>Ejecutivo:</strong> {followUp.salesExecutive}</p>
+                </div>
+                <div className="text-sm text-gray-700 mb-2">
+                    <p><strong>Contacto del Cliente:</strong></p>
+                    <p>{`${followUp.clientContact.firstName} ${followUp.clientContact.lastName}`}</p>
+                    <a
+                        href={`mailto:${followUp.clientContact.email}`}
+                        className="text-blue-600 underline text-xs"
+                    >
+                        {followUp.clientContact.email}
+                    </a>
+                    <p className="text-xs">{followUp.clientContact.phone}</p>
+                </div>
+                <div className="text-sm text-gray-700 mb-2">
+                    <p><strong>Descripción:</strong> {followUp.description}</p>
+                </div>
+                <div className="text-sm text-gray-700">
+                    <p><strong>Notas Adicionales:</strong> {followUp.additionalNotes}</p>
                 </div>
             </div>
+        ))}
+    </div>
+</div>
+
         </div>
     );
 };
