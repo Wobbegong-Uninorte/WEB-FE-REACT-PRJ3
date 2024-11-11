@@ -6,6 +6,8 @@ import { IoMdCheckmarkCircle, IoMdCloseCircle } from 'react-icons/io';
 import { FaSyncAlt, FaArrowCircleRight } from 'react-icons/fa';
 import { AiOutlineFileText } from "react-icons/ai"
 
+import OppDetailsLow from './OppDetailsLow';
+
 interface Opportunity {
     id: string;
     businessName: string;
@@ -120,6 +122,9 @@ const OppDetailsTop: React.FC = () => {
                     </div>
                 </CardContent>
             </Card>
+            <div id="follow-up-section" className="mt-6 transition-transform ease-in-out duration-300 transform">
+                <OppDetailsLow />
+            </div>
         </div>
     );
 };

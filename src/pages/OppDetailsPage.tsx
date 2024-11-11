@@ -1,6 +1,6 @@
 import React from 'react';
 import MainLayout from '../layouts/MainLayout';
-import OppDetailsTop from "../components/OppDatailsTop";
+import OppDetailsTop_low from "../components/OppDatailsTop";
 
 const OppDetailsPage: React.FC = () => {
     
@@ -8,9 +8,8 @@ const OppDetailsPage: React.FC = () => {
         <MainLayout>
             <div className="bg-[#f3f4f6]">
                 <h1 className="text-2xl font-bold text-center pt-6">Información de la Oportunidad</h1>
-                <OppDetailsTop />
+                <OppDetailsTop_low />
             </div>
-            
         </MainLayout>
     );
 };
