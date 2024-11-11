@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ArrowLeft, User, Building, Phone, Mail, MapPin, Globe} from 'lucide-react';
+import { FaUser, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+
 
 interface Client {
   id: string;
@@ -46,16 +48,23 @@ const ClientDetailTop = () => {
 
       <Card className="w-full">
         <CardHeader className="bg-gray-50 border-b">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-xl font-semibold">Información del Cliente</CardTitle>
-            <span className={`px-3 py-1 rounded-full text-sm ${
-              client.active 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-red-100 text-red-800'
-            }`}>
-              {client.active ? 'ACTIVO' : 'INACTIVO'}
-            </span>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <FaUser className="mr-2 text-blue-500" aria-label="Icono de información del cliente" />
+            <h2 className="text-xl font-semibold">Información del Cliente</h2>
           </div>
+          <span className={`flex items-center px-3 py-1 rounded-full text-sm ${
+            client.active 
+              ? 'bg-green-100 text-green-800' 
+              : 'bg-red-100 text-red-800'
+          }`}>
+            {client.active 
+              ? <FaCheckCircle className="mr-1 text-green-800" aria-label="Cliente activo" /> 
+              : <FaTimesCircle className="mr-1 text-red-800" aria-label="Cliente inactivo" />}
+            {client.active ? 'ACTIVO' : 'INACTIVO'}
+          </span>
+        </div>
+
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
           <div className="flex items-start space-x-3">
