@@ -80,7 +80,7 @@ const OpportunitiesTable = () => {
 
   const handleOpportunityClick = (opportunity: Opportunity) => {
     localStorage.setItem('selectedOpportunity', JSON.stringify(opportunity));
-    navigate('/OportunidadDetails');
+    navigate('/OppDetailsPage');
   };
 
   const handlePageChange = (selectedItem: { selected: number }) => {
@@ -132,7 +132,7 @@ const OpportunitiesTable = () => {
       <div className="overflow-x-auto overflow-y-auto max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
         <table className="table-auto bg-white w-full rounded-md">
           <thead>
-            <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+            <tr className="text-sm border-b border-gray-200 bg-gray-200 text-gray-700">
               <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[100px]">Nombre Negocio</th>
               <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[90px]">Línea Negocio</th>
               <th className="py-3 px-2 text-center font-semibold w-[200px]">Descripción</th>
@@ -146,7 +146,7 @@ const OpportunitiesTable = () => {
             {currentOpportunities.map((opportunity, index) => (
               <tr 
                 key={opportunity.id}
-                className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-100 text-sm text-gray-600 hover:bg-gray-50/50 transition-colors duration-150`}
+                className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} border-b border-gray-100 text-sm text-gray-600 hover:bg-gray-50/50 transition-colors duration-150`}
               >
                 <td className="py-4 px-2 text-center whitespace-nowrap w-[100px] cursor-pointer hover:text-gray-800" 
                     onClick={() => handleOpportunityClick(opportunity)}>
