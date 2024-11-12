@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { FaClipboardList, FaTimes, FaRegCalendarAlt, FaCheckCircle, FaExclamationCircle, FaDollarSign, FaCalendarDay } from 'react-icons/fa';
-import DeleteOpportunityDialog from './DeleteOpportunityDialog';
+import React, { useState, useEffect } from 'react';
+import { FaClipboardList, FaRegCalendarAlt, FaCheckCircle, FaExclamationCircle, FaDollarSign, FaCalendarDay } from 'react-icons/fa';
 
 interface Opportunity {
     id: string;
-    description: string;
-    status: string;
     businessName: string;
     businessLine: string;
+    description: string;
     estimatedValue: number;
     estimatedDate: string;
-    clientId: string;
+    status: string;
 }
 
 interface FollowUpActivity {
@@ -27,43 +25,27 @@ interface FollowUpActivity {
     additionalNotes: string;
 }
 
-interface ClientDetailLowProps {
-    opportunity: Opportunity;
-    onClose: () => void;
-}
-
-const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose }) => {
+const OppDetailsLow: React.FC = () => {
+    const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
     const [followUps, setFollowUps] = useState<FollowUpActivity[]>([]);
 
     useEffect(() => {
-        const fetchFollowUps = async () => {
-            try {
-                const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
-                const data = await response.json();
-                
-                const followUpData = data.find((follow: any) => follow.opportunityId === opportunity.id);
-                setFollowUps(followUpData ? followUpData.followUpActivities : []);
-            } catch (error) {
-                console.error('Error fetching follow-up activities:', error);
-            }
-        };
+        const savedOpportunity = localStorage.getItem('selectedOpportunity');
+        if (savedOpportunity) {
+            const opportunityData = JSON.parse(savedOpportunity);
+            setOpportunity(opportunityData);
+            fetchFollowUps(opportunityData.id);
+        }
+    }, []);
 
-        fetchFollowUps();
-    }, [opportunity]);
-
-    const handleDeleteOpportunity = async (id: string) => {
+    const fetchFollowUps = async (opportunityId: string) => {
         try {
-            const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/opportunities/${id}`, {
-                method: 'DELETE',
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error al eliminar la oportunidad: ${response.statusText}`);
-            }
-
-            onClose();
+            const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
+            const data = await response.json();
+            const followUpData = data.find((follow: any) => follow.opportunityId === opportunityId);
+            setFollowUps(followUpData ? followUpData.followUpActivities : []);
         } catch (error) {
-            console.error('Error al eliminar la oportunidad:', error);
+            console.error('Error fetching follow-up activities:', error);
         }
     };
 
@@ -80,6 +62,14 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
         }
     };
 
+    if (!opportunity) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <p>No se encontró información de la oportunidad</p>
+            </div>
+        );
+    }
+
     return (
         <div className="container mx-auto p-6 bg-white rounded-xl">
             <div className="flex justify-between items-center mb-4">
@@ -87,20 +77,7 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
                     <FaClipboardList className="mr-3 text-blue-600 text-2xl" />
                     <h4 className="text-xl font-semibold flex items-center">Seguimiento de: {opportunity.businessLine}</h4>
                 </div>
-                <div className="flex items-center space-x-2">
-                    <DeleteOpportunityDialog
-                        opportunityId={opportunity.id}
-                        opportunityDescription={opportunity.businessLine}
-                        onDelete={handleDeleteOpportunity}
-                    />
-                    <button
-                        onClick={onClose}
-                        className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-full p-2"
-                        aria-label="Cerrar"
-                    >
-                        <FaTimes className="text-xl" />
-                    </button>
-                </div>
+
             </div>
 
             {/* Información de la oportunidad */}
@@ -112,7 +89,7 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
                 </div>
                 <div className="flex items-center space-x-2">
                     <FaCalendarDay className="text-gray-500" />
-                    <span className="text-sm font-medium text-gray-700">Fecha Estimada:</span>
+                    <span className="text-sm font-medium text-gray-700">Fecha inicio:</span>
                     <span className="text-sm font-semibold text-blue-600">{opportunity.estimatedDate}</span>
                 </div>
             </div>
@@ -194,12 +171,11 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
                     <p><strong>Notas Adicionales:</strong> {followUp.additionalNotes}</p>
                 </div>
             </div>
-        ))}
-    </div>
-</div>
-
+                ))}
+            </div>
         </div>
+    </div>
     );
 };
 
-export default ClientDetailLow;
+export default OppDetailsLow;

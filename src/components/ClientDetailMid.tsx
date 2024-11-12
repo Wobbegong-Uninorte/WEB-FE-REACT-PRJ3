@@ -252,7 +252,7 @@ const ClientDetails: React.FC = () => {
                 </tbody>
               </table>
               {showFollowUp && selectedOpportunity && (
-                <div id="follow-up-section" className="mt-6 transition-transform ease-in-out duration-300 transform scale-105">
+                <div id="follow-up-section" className="mt-6 transition-transform ease-in-out duration-300 transform">
                   <SeguimientoOportunidad opportunity={selectedOpportunity} onClose={handleCloseFollowUp} />
                 </div>
               )}
