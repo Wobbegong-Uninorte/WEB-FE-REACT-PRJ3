@@ -1,3 +1,5 @@
+//ClientsTable.tsx
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
@@ -5,9 +7,20 @@ import 'tailwindcss/tailwind.css';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import UpdateClient from './UpdateClient';
 
+interface Opportunity {
+  id: number;
+  name: string;
+}
+
+interface ContactType {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
 
 interface Client {
-  id: string;
+  id: number;
   nit: string;
   name: string;
   address: string;
@@ -16,6 +29,8 @@ interface Client {
   phone: string;
   email: string;
   active: boolean;
+  opportunities?: Opportunity[];
+  contacts: ContactType[];
 }
 
 const ClientsTable = () => {
@@ -23,7 +38,7 @@ const ClientsTable = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [updatingClientId, setUpdatingClientId] = useState<string | null>(null);
+  const [updatingClientId, setUpdatingClientId] = useState<number | null>(null);
   const [updateError, setUpdateError] = useState<string | null>(null);
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -40,26 +55,21 @@ const ClientsTable = () => {
     try {
       const response = await fetch('https://web-fe-react-prj3-api.onrender.com/clients');
       if (!response.ok) {
-        throw new Error(`Error al obtener los clientes: ${response.statusText}`);
+        throw new Error(`Error al obtener los clientes: ${response.status}`);
       }
       const data = await response.json();
-      console.log('Datos recibidos:', data);
-
-      if (Array.isArray(data)) {
-        setClients(data);
-      } else {
-        setClients([data]);
-      }
+      
+      setClients(Array.isArray(data) ? data : [data]);
       setError(null);
     } catch (error) {
       console.error('Error al obtener los clientes:', error);
-      setError('Error al cargar los datos');
+      setError(error instanceof Error ? error.message : 'Error al cargar los datos');
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleClientStatus = async (clientId: string, newStatus: boolean) => {
+  const toggleClientStatus = async (clientId: number, newStatus: boolean) => {
     setUpdatingClientId(clientId);
     setUpdateError(null);
 
@@ -120,8 +130,8 @@ const ClientsTable = () => {
     (currentPage + 1) * resultsPerPage
   );
 
-  const handlePageChange = (selectedItem: { selected: number }) => {
-    setCurrentPage(selectedItem.selected);
+  const handlePageChange = ({ selected }: { selected: number }) => {
+    setCurrentPage(selected);
   };
 
   if (loading) {
@@ -178,8 +188,8 @@ const ClientsTable = () => {
         )}
 
         {/* Contenedor con scroll horizontal */}
-        <div className="overflow-x-auto overflow-y-auto max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
-        <table className="table-auto bg-white w-full rounded-md">
+        <div className="overflow-x-auto w-full max-w-[95vw] border border-gray-100 rounded-md shadow-xl">
+        <table className="min-w-full table-auto bg-white">
               <thead>
                 <tr className="bg-gray-200 text-gray-700 text-sm">
                   <th className="py-3 px-4 text-center font-semibold">NIT</th>

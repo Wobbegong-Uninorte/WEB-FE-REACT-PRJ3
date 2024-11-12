@@ -5,6 +5,7 @@ import ClientDetailTop from "../components/ClientDetailTop";
 import ClientDetails from '../pages/ClientDetails';
 import OpportunitiesPage from '../pages/OpportunitiesPage'; // Asegúrate de que el nombre y ruta de importación sean correctos
 import CreateOpportunity from '../components/CreateOpportunity'; // Asegúrate de que el nombre y ruta de importación sean correctos
+import OpportunityDetailsPage from '../pages/OppDetailsPage';
 
 const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
   {
     path: "/oportunidad/nueva", 
     element: <CreateOpportunity /> 
+  },
+  {
+    path: "/OppDetailsPage", 
+    element: <OpportunityDetailsPage /> 
   },
 ]);
 

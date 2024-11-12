@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
-import 'tailwindcss/tailwind.css';
+import DeleteOpportunityDialog from './DeleteOpportunityDialog';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+
 interface Opportunity {
   id: string;
-  clientName: string;
   businessName: string;
   businessLine: string;
   description: string;
@@ -33,19 +33,43 @@ const OpportunitiesTable = () => {
         throw new Error(`Error al obtener las oportunidades: ${response.statusText}`);
       }
       const data = await response.json();
-      console.log('Datos recibidos:', data);
-
-      if (Array.isArray(data)) {
-        setOpportunities(data);
-      } else {
-        setOpportunities([data]);
-      }
+      
+      setOpportunities(Array.isArray(data) ? data : [data]);
       setError(null);
     } catch (error) {
       console.error('Error al obtener las oportunidades:', error);
       setError('Error al cargar los datos');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteOpportunity = async (id: string) => {
+    try {
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/opportunities/${id}`, {
+        method: 'DELETE',
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error al eliminar la oportunidad: ${response.statusText}`);
+      }
+  
+      // Asegúrate de que la respuesta fue exitosa y filtra la oportunidad correctamente
+      setOpportunities(prevOpportunities => {
+        const updatedOpportunities = prevOpportunities.filter(opp => opp.id !== id);
+        console.log('Oportunidades actualizadas:', updatedOpportunities); // Verifica la lista después de la eliminación
+        return updatedOpportunities;
+      });
+  
+      // Ajustar la página si es necesario
+      const remainingItems = opportunities.length - 1;
+      const maxPages = Math.ceil(remainingItems / resultsPerPage);
+      if (currentPage >= maxPages) {
+        setCurrentPage(Math.max(0, maxPages - 1));
+      }
+    } catch (error) {
+      console.error('Error al eliminar la oportunidad:', error);
+      setError('Error al eliminar la oportunidad');
     }
   };
 
@@ -56,7 +80,7 @@ const OpportunitiesTable = () => {
 
   const handleOpportunityClick = (opportunity: Opportunity) => {
     localStorage.setItem('selectedOpportunity', JSON.stringify(opportunity));
-    navigate('/OportunidadDetails');
+    navigate('/OppDetailsPage');
   };
 
   const handlePageChange = (selectedItem: { selected: number }) => {
@@ -108,8 +132,7 @@ const OpportunitiesTable = () => {
       <div className="overflow-x-auto overflow-y-auto max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
         <table className="table-auto bg-white w-full rounded-md">
           <thead>
-            <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
-              <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[80px]">Cliente</th>
+            <tr className="text-sm border-b border-gray-200 bg-gray-200 text-gray-700">
               <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[100px]">Nombre Negocio</th>
               <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[90px]">Línea Negocio</th>
               <th className="py-3 px-2 text-center font-semibold w-[200px]">Descripción</th>
@@ -123,10 +146,9 @@ const OpportunitiesTable = () => {
             {currentOpportunities.map((opportunity, index) => (
               <tr 
                 key={opportunity.id}
-                className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-100 text-sm text-gray-600 hover:bg-gray-50/50 transition-colors duration-150`}
+                className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-100'} border-b border-gray-100 text-sm text-gray-600 hover:bg-gray-50/50 transition-colors duration-150`}
               >
-                <td className="py-4 px-2 text-center whitespace-nowrap w-[80px]">{opportunity.clientName}</td>
-                <td className="py-4 px-2 text-center whitespace-nowrap w-[100px] cursor-pointer hover:text-gray-800" 
+                <td className="py-4 px-2 text-center whitespace-nowrap w-[100px] cursor-pointer hover:text-blue-600 hover:underline" 
                     onClick={() => handleOpportunityClick(opportunity)}>
                   {opportunity.businessName}
                 </td>
@@ -156,12 +178,11 @@ const OpportunitiesTable = () => {
                     >
                       Actualizar
                     </button>
-                    <button 
-                      className="bg-[#00BCD4] text-white px-3 py-1 rounded-r-full flex items-center justify-center text-sm hover:bg-[#0097A7] transition-colors duration-200"
-                      onClick={() => {/* Función para eliminar */}}
-                    >
-                      Eliminar
-                    </button>
+                    <DeleteOpportunityDialog
+                      opportunityId={opportunity.id}
+                      opportunityDescription={opportunity.description}
+                      onDelete={handleDeleteOpportunity}
+                    />
                   </div>
                 </td>
               </tr>
@@ -180,7 +201,6 @@ const OpportunitiesTable = () => {
         activeClassName="bg-blue-500 text-white font-semibold border border-blue-600"
         previousClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
         nextClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
-        disabledClassName="opacity-50 cursor-not-allowed"
       />
     </div>
   );
