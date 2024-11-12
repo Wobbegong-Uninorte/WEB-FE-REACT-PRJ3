@@ -63,30 +63,31 @@ const OppDetailsTop: React.FC = () => {
             </button>
 
             <Card className="w-full">
-                <CardHeader className="bg-gray-50 border-b">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center">
-                            <UserCircle className="mr-2 text-blue-500" aria-label="Icono de información del cliente" />
-                            <h2 className="text-xl font-semibold">Oportunidad: {opportunity.businessName}</h2>
-                        </div>
+            <CardHeader className="bg-gray-50 border-b">
+                <div className="flex flex-col sm:flex-row justify-between items-center">
+                    <div className="flex items-center mb-2 sm:mb-0">
+                    <UserCircle className="mr-2 text-blue-500" aria-label="Icono de información del cliente" />
+                    <h2 className="text-xl font-semibold truncate sm:whitespace-nowrap">{`Oportunidad: ${opportunity.businessName}`}</h2>
+                    </div>
 
-                        <div className="flex-shrink-0">
-                            {(() => {
-                                const statusStyle = getStatusStyle(opportunity.status); 
-                                return (
-                                    <span
-                                        className={`inline-flex items-center justify-center px-3 py-2 rounded-full text-xs font-semibold ${statusStyle.textColor} ${statusStyle.bgColor}`}
-                                        role="status"
-                                        aria-label={`Estado: ${opportunity.status}`}
-                                    >
-                                        {statusStyle.icon}
-                                        <span className="ml-1">{opportunity.status}</span>
-                                    </span>
-                                );
-                            })()}
+                    <div className="flex-shrink-0">
+                    {(() => {
+                        const statusStyle = getStatusStyle(opportunity.status); 
+                        return (
+                        <span
+                            className={`inline-flex items-center justify-center px-3 py-2 rounded-full text-xs font-semibold ${statusStyle.textColor} ${statusStyle.bgColor}`}
+                            role="status"
+                            aria-label={`Estado: ${opportunity.status}`}
+                        >
+                            {statusStyle.icon}
+                            <span className="ml-1">{opportunity.status}</span>
+                        </span>
+                        );
+                        })()}
                         </div>
                     </div>
                 </CardHeader>
+
 
                 <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
                     <div className="flex items-start space-x-3">
