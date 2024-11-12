@@ -89,7 +89,7 @@ const OppDetailsLow: React.FC = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                     <FaCalendarDay className="text-gray-500" />
-                    <span className="text-sm font-medium text-gray-700">Fecha Estimada:</span>
+                    <span className="text-sm font-medium text-gray-700">Fecha inicio:</span>
                     <span className="text-sm font-semibold text-blue-600">{opportunity.estimatedDate}</span>
                 </div>
             </div>
