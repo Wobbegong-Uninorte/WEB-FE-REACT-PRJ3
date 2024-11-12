@@ -3,15 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
 import DeleteOpportunityDialog from './DeleteOpportunityDialog';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
+import UpdateOpportunity from './UpdateOpportunity';
 
 interface Opportunity {
   id: string;
+  client: string;
   businessName: string;
-  businessLine: string;
+  businessLine:
+    | "outsourcing recursos"
+    | "desarrollo web"
+    | "desarrollo mobile"
+    | "consultoría TI";
   description: string;
   estimatedValue: number;
-  estimatedDate: string;
-  status: string;
+  estimatedDate: Date;
+  status: "Apertura" | "En Estudio" | "Orden de Compra" | "Ejecutada";
 }
 
 const OpportunitiesTable = () => {
@@ -21,6 +27,8 @@ const OpportunitiesTable = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const resultsPerPage = 8;
+  const [showUpdateModal, setShowUpdateModal] = useState(false);
+  const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
 
   useEffect(() => {
     fetchOpportunities();
@@ -89,31 +97,60 @@ const OpportunitiesTable = () => {
 
   const getStatusStyle = (status: string) => {
     switch (status.toUpperCase()) {
-      case 'GANADA':
+      case 'EN ESTUDIO':
         return {
           bgColor: 'bg-green-100',
           textColor: 'text-green-800'
         };
-      case 'PERDIDA':
+      case 'EJECUTADA':
         return {
           bgColor: 'bg-red-100',
           textColor: 'text-red-800'
         };
-      case 'EN PROCESO':
+      case 'APERTURA':
         return {
           bgColor: 'bg-blue-100',
           textColor: 'text-blue-800'
         };
-      case 'CANCELADA':
+      case 'ORDEN DE COMPRA':
         return {
-          bgColor: 'bg-gray-100',
-          textColor: 'text-gray-800'
+          bgColor: 'bg-orange-100',
+          textColor: 'text-orange-800'
         };
       default:
         return {
           bgColor: 'bg-gray-100',
           textColor: 'text-gray-800'
         };
+    }
+  };
+
+  const handleUpdateClick = (opportunity: Opportunity) => {
+    setSelectedOpportunity(opportunity);
+    setShowUpdateModal(true);
+  };
+
+  const handleOpportunityUpdate = async (updatedOpportunity: Opportunity) => {
+    try {
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/opportunities/${updatedOpportunity.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedOpportunity),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar la oportunidad');
+      }
+
+      setOpportunities(prevOpportunities => 
+        prevOpportunities.map(opp => 
+          opp.id === updatedOpportunity.id ? updatedOpportunity : opp
+        )
+      );
+      setShowUpdateModal(false);
+    } catch (error) {
+      console.error('Error:', error);
+      setError('Error al actualizar la oportunidad');
     }
   };
 
@@ -132,35 +169,36 @@ const OpportunitiesTable = () => {
       <div className="overflow-x-auto overflow-y-auto max-w-full border border-gray-100 rounded-md shadow-xl scrollbar-custom">
         <table className="table-auto bg-white w-full rounded-md">
           <thead>
-            <tr className="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
-              <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[100px]">Nombre Negocio</th>
-              <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[90px]">Línea Negocio</th>
-              <th className="py-3 px-2 text-center font-semibold w-[200px]">Descripción</th>
-              <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[90px]">Valor Estimado</th>
-              <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[80px]">Fecha Estimada</th>
-              <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[70px]">Estado</th>
-              <th className="py-3 px-2 text-center font-semibold whitespace-nowrap w-[180px]">Acciones</th>
+            <tr className="bg-gray-200 text-gray-700 text-sm">
+              <th className="py-3 px-4 text-center font-semibold w-[120px]">Nombre Negocio</th>
+              <th className="py-3 px-4 text-center font-semibold w-[120px]">Línea Negocio</th>
+              <th className="py-3 px-4 text-center font-semibold w-[300px]">Descripción</th>
+              <th className="py-3 px-4 text-center font-semibold w-[120px]">Valor Estimado</th>
+              <th className="py-3 px-4 text-center font-semibold w-[120px]">Fecha Estimada</th>
+              <th className="py-3 px-4 text-center font-semibold w-[120px]">Estado</th>
+              <th className="py-3 px-4 text-center font-semibold w-[250px]">Acciones</th>
             </tr>
           </thead>
           <tbody>
             {currentOpportunities.map((opportunity, index) => (
               <tr 
                 key={opportunity.id}
-                className={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b border-gray-100 text-sm text-gray-600 hover:bg-gray-50/50 transition-colors duration-150`}
+                className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-sm text-gray-700`}
               >
-                <td className="py-4 px-2 text-center whitespace-nowrap w-[100px] cursor-pointer hover:text-gray-800" 
-                    onClick={() => handleOpportunityClick(opportunity)}>
+                <td className="py-4 px-2 text-center w-[120px]" onClick={() => handleOpportunityClick(opportunity)}>
                   {opportunity.businessName}
                 </td>
-                <td className="py-4 px-2 text-center whitespace-nowrap w-[90px]">{opportunity.businessLine}</td>
-                <td className="py-4 px-2 text-center w-[200px] break-words">{opportunity.description}</td>
-                <td className="py-4 px-2 text-center whitespace-nowrap w-[90px]">
+                <td className="py-4 px-2 text-center w-[120px]">{opportunity.businessLine}</td>
+                <td className="py-4 px-2 text-center w-[300px] break-words">{opportunity.description}</td>
+                <td className="py-4 px-2 text-center w-[120px]">
                   {new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(opportunity.estimatedValue)}
                 </td>
-                <td className="py-4 px-2 text-center whitespace-nowrap w-[80px]">
-                  {new Date(opportunity.estimatedDate).toLocaleDateString('es-CO')}
+                <td className="py-4 px-2 text-center w-[120px]">
+                  {new Date(new Date(opportunity.estimatedDate).getTime() + new Date(opportunity.estimatedDate).getTimezoneOffset() * 60000)
+                    .toISOString()
+                    .split('T')[0]}
                 </td>
-                <td className="py-4 px-2 text-center whitespace-nowrap w-[70px]">
+                <td className="py-4 px-2 text-center w-[120px]">
                   {(() => {
                     const styles = getStatusStyle(opportunity.status);
                     return (
@@ -170,11 +208,11 @@ const OpportunitiesTable = () => {
                     );
                   })()}
                 </td>
-                <td className="py-4 px-2 text-center w-[180px]">
+                <td className="py-4 px-2 text-center w-[250px]">
                   <div className="flex justify-center gap-1">
                     <button 
                       className="bg-[#FF9800] text-white px-3 py-1 rounded-l-full flex items-center justify-center text-sm hover:bg-[#F57C00] transition-colors duration-200"
-                      onClick={() => {/* Función para actualizar */}}
+                      onClick={() => handleUpdateClick(opportunity)}
                     >
                       Actualizar
                     </button>
@@ -202,6 +240,14 @@ const OpportunitiesTable = () => {
         previousClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
         nextClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
       />
+
+      {showUpdateModal && selectedOpportunity && (
+        <UpdateOpportunity
+          opportunity={selectedOpportunity}
+          onClose={() => setShowUpdateModal(false)}
+          onUpdate={handleOpportunityUpdate}
+        />
+      )}
     </div>
   );
 };
