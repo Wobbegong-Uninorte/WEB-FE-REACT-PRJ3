@@ -43,10 +43,58 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const validateFormData = (): boolean => {
+    const emptyClientFields: string[] = [];
+    const emptyContactFields: { [key: number]: string[] } = {};
+    let isValid = true;
+    
+    // Validar campos del cliente
+    for (const [key, value] of Object.entries(formData)) {
+      if (key !== 'opportunities' && key !== 'active' && key !== 'contacts') {
+        if (client[key as keyof Client] && !value) {
+          emptyClientFields.push(key);
+          isValid = false;
+        }
+      }
+    }
+
+    // Validar campos de contactos
+    formData.contacts.forEach((contact, index) => {
+      for (const [key, value] of Object.entries(contact)) {
+        if (!value) {
+          if (!emptyContactFields[index]) {
+            emptyContactFields[index] = [];
+          }
+          emptyContactFields[index].push(key);
+          isValid = false;
+        }
+      }
+    });
+
+    // Construir mensaje de error si hay campos vacíos
+    if (!isValid) {
+      const errorMessages: string[] = [];
+      if (emptyClientFields.length > 0) {
+        errorMessages.push(`Campos Vacíos (Cliente): ${emptyClientFields.join(', ')}`);
+      }
+      
+      Object.entries(emptyContactFields).forEach(([index, fields]) => {
+        if (fields.length > 0) {
+          errorMessages.push(`Campos Vacíos (Contacto-${Number(index) + 1}): ${fields.join(', ')}`);
+        }
+      });
+      
+      setError(errorMessages.join('\n'));
+    }
+
+    return isValid;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateFormData()) return;
+    
     try {
-
       // Cambiar el método a PUT para actualizar el cliente
       const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${client.id}`, {
         method: 'PUT',
