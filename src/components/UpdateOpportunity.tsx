@@ -87,7 +87,7 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
 
       const updatedOpportunity = {
         ...formData,
-        estimatedDate: dateOnly
+        estimatedDate: new Date(dateOnly)
       };
 
       onUpdate(updatedOpportunity);
