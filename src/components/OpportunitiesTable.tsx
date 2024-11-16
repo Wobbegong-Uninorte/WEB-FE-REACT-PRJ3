@@ -88,7 +88,7 @@ const OpportunitiesTable = () => {
 
   const handleOpportunityClick = (opportunity: Opportunity) => {
     localStorage.setItem('selectedOpportunity', JSON.stringify(opportunity));
-    navigate('/OportunidadDetails');
+    navigate('/OppDetailsPage');
   };
 
   const handlePageChange = (selectedItem: { selected: number }) => {
@@ -177,15 +177,18 @@ const OpportunitiesTable = () => {
               <th className="py-3 px-4 text-center font-semibold w-[120px]">Fecha Estimada</th>
               <th className="py-3 px-4 text-center font-semibold w-[120px]">Estado</th>
               <th className="py-3 px-4 text-center font-semibold w-[250px]">Acciones</th>
+
             </tr>
           </thead>
           <tbody>
             {currentOpportunities.map((opportunity, index) => (
               <tr 
                 key={opportunity.id}
+
                 className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-sm text-gray-700`}
               >
                 <td className="py-4 px-2 text-center w-[120px]" onClick={() => handleOpportunityClick(opportunity)}>
+
                   {opportunity.businessName}
                 </td>
                 <td className="py-4 px-2 text-center w-[120px]">{opportunity.businessLine}</td>

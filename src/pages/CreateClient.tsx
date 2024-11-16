@@ -1,75 +1,48 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import OpportunityForm from "../components/OpportunityForm";
-import { createOpportunity } from "../services/opportunityServices";
-import { addOpportunityToClient } from "../services/clientServices";
-import { Opportunities } from "../types/opportunities";
-import { ClientType } from "../types/clients";
-import MainLayout from "../layouts/MainLayout";
+// src/pages/CreateClient.tsx
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import ClientForm from '../components/ClientForm';
+import { createClient } from '../services/clientServices';
+import { ClientType } from '../types/clients';
+import MainLayout from '../layouts/MainLayout';
 
-const CreateOpportunity: React.FC = () => {
+const CreateClient: React.FC = () => {
   const navigate = useNavigate();
 
-  const initialOpportunityState: Opportunities = {
-    client: "",
-    businessName: "",
-    businessLine: "outsourcing recursos",
-    description: "",
-    estimatedValue: 0,
-    estimatedDate: new Date(),
-    status: "Apertura",
+  const initialClientState: ClientType = {
+    id: 0,
+    nit: '',
+    name: '',
+    address: '',
+    city: '',
+    country: '',
+    phone: '',
+    email: '',
+    active: true,
+    contacts: [],
   };
 
-  const [opportunity, setOpportunity] = useState<Opportunities>(initialOpportunityState);
-  const [clients, setClients] = useState<ClientType[]>([]);
+  const [client, setClient] = useState<ClientType>(initialClientState);
 
-  const handleOpportunityChange = (updatedOpportunity: Opportunities) => {
-    setOpportunity(updatedOpportunity);
+  const handleClientChange = (updatedClient: ClientType) => {
+    setClient(updatedClient);
   };
 
-  const handleCreateOpportunity = async () => {
+  const handleCreateClient = async () => {
     try {
-      await createOpportunity(opportunity);
-
-      const selectedClient = clients.find((client) => client.name === opportunity.client);
-
-      if (selectedClient) {
-        await addOpportunityToClient(selectedClient.id, opportunity);
-
-        alert("Oportunidad creada y asociada al cliente con éxito");
-        navigate("/OpportunitiesPage");
-      } else {
-        alert("Cliente no encontrado");
-      }
+      await createClient(client);
+      alert('Cliente y contactos creados con éxito');
+      navigate('/'); // Redirige a la página de inicio
     } catch (error) {
-      console.log("Error creando oportunidad: ", error);
+      console.log("Error creando cliente: ", error);
     }
   };
 
-  useEffect(() => {
-    const fetchClients = async () => {
-      try {
-        const response = await fetch("https://web-fe-react-prj3-api.onrender.com/clients");
-        const data = await response.json();
-        setClients(data);
-      } catch (error) {
-        console.log("Error al cargar los clientes:", error);
-      }
-    };
-
-    fetchClients();
-  }, []);
-
   return (
-    <MainLayout>
-      <OpportunityForm
-        opportunity={opportunity}
-        clients={clients}
-        onChange={handleOpportunityChange}
-        onSubmit={handleCreateOpportunity}
-      />
+    <MainLayout> 
+      <ClientForm client={client} onChange={handleClientChange} onSubmit={handleCreateClient} />
     </MainLayout>
   );
 };
 
-export default CreateOpportunity;
+export default CreateClient;
