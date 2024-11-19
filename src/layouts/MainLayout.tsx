@@ -73,7 +73,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
                             {[
                                 { path: '/', icon: <Users className="h-6 w-6" />, label: 'Clientes' },
                                 { path: '/OpportunitiesPage', icon: <Target className="h-6 w-6" />, label: 'Oportunidades' },
-                                { path: '/tracking', icon: <LineChart className="h-6 w-6" />, label: 'Seguimiento' },
+                                { path: '/FollowPage', icon: <LineChart className="h-6 w-6" />, label: 'Seguimiento' },
                                 { path: '/dashboard', icon: <LayoutDashboard className="h-6 w-6" />, label: 'Dashboard' },
                             ].map((item) => (
                                 <li key={item.path}>
