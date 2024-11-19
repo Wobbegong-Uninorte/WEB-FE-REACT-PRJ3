@@ -42,7 +42,8 @@ const router = createBrowserRouter([
   {
     path: "/Dashboard",
     element: <Dashboard />
-  }
+  },
+  {
     path: "/FollowPage", 
     element: <FollowPage /> 
   },
