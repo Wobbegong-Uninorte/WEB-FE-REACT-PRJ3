@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { FaClipboardList, FaTimes, FaRegCalendarAlt, FaCheckCircle, FaExclamationCircle, FaDollarSign, FaCalendarDay } from 'react-icons/fa';
-import DeleteOpportunityDialog from './DeleteOpportunityDialog';
 
 interface Opportunity {
     id: string;
@@ -36,34 +35,18 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
     const [followUps, setFollowUps] = useState<FollowUpActivity[]>([]);
 
     useEffect(() => {
-        const fetchFollowUps = async () => {
-            try {
-                const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
-                const data = await response.json();
-                
-                const followUpData = data.find((follow: any) => follow.opportunityId === opportunity.id);
-                setFollowUps(followUpData ? followUpData.followUpActivities : []);
-            } catch (error) {
-                console.error('Error fetching follow-up activities:', error);
-            }
-        };
-
         fetchFollowUps();
     }, [opportunity]);
 
-    const handleDeleteOpportunity = async (id: string) => {
+    const fetchFollowUps = async () => {
         try {
-            const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/opportunities/${id}`, {
-                method: 'DELETE',
-            });
-
-            if (!response.ok) {
-                throw new Error(`Error al eliminar la oportunidad: ${response.statusText}`);
-            }
-
-            onClose();
+            const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
+            const data = await response.json();
+            
+            const followUpData = data.find((follow: any) => follow.opportunityId === opportunity.id);
+            setFollowUps(followUpData ? followUpData.followUpActivities : []);
         } catch (error) {
-            console.error('Error al eliminar la oportunidad:', error);
+            console.error('Error fetching follow-up activities:', error);
         }
     };
 
@@ -88,11 +71,6 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
                     <h4 className="text-xl font-semibold flex items-center">Seguimiento de: {opportunity.businessLine}</h4>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <DeleteOpportunityDialog
-                        opportunityId={opportunity.id}
-                        opportunityDescription={opportunity.businessLine}
-                        onDelete={handleDeleteOpportunity}
-                    />
                     <button
                         onClick={onClose}
                         className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-300 rounded-full p-2"
@@ -130,7 +108,6 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
             </div>
 
             <div className="hidden lg:block">
-                {/* Tabla de Seguimientos */}
                 <table className="w-full border-t bg-white rounded-lg shadow-sm">
                     <thead className="bg-gray-100 text-gray-600">
                         <tr>
@@ -167,37 +144,36 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
 
             <div className="block lg:hidden">
                 <div className="space-y-4">
-                    {followUps.map((followUp) => (
-                <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4">
-                <div className="mb-2 text-xs font-semibold text-gray-500 uppercase">
-                    {followUp.contactDate}
-                </div>
-                <div className="flex justify-between items-center text-sm text-gray-700 mb-4">
-                    <p className="mr-4"><strong>Tipo:</strong> {followUp.contactType}</p>
-                    <p><strong>Ejecutivo:</strong> {followUp.salesExecutive}</p>
-                </div>
-                <div className="text-sm text-gray-700 mb-2">
-                    <p><strong>Contacto del Cliente:</strong></p>
-                    <p>{`${followUp.clientContact.firstName} ${followUp.clientContact.lastName}`}</p>
-                    <a
-                        href={`mailto:${followUp.clientContact.email}`}
-                        className="text-blue-600 underline text-xs"
-                    >
-                        {followUp.clientContact.email}
-                    </a>
-                    <p className="text-xs">{followUp.clientContact.phone}</p>
-                </div>
-                <div className="text-sm text-gray-700 mb-2">
-                    <p><strong>Descripción:</strong> {followUp.description}</p>
-                </div>
-                <div className="text-sm text-gray-700">
-                    <p><strong>Notas Adicionales:</strong> {followUp.additionalNotes}</p>
+                    {followUps.map((followUp, index) => (
+                        <div key={index} className="bg-white border border-gray-300 rounded-lg shadow-sm p-4">
+                            <div className="text-xs font-semibold text-gray-500 uppercase mb-2">
+                                {followUp.contactDate}
+                            </div>
+                            <div className="flex justify-between items-center text-sm text-gray-700 mb-4">
+                                <p className="mr-4"><strong>Tipo:</strong> {followUp.contactType}</p>
+                                <p><strong>Ejecutivo:</strong> {followUp.salesExecutive}</p>
+                            </div>
+                            <div className="text-sm text-gray-700 mb-2">
+                                <p><strong>Contacto del Cliente:</strong></p>
+                                <p>{`${followUp.clientContact.firstName} ${followUp.clientContact.lastName}`}</p>
+                                <a
+                                    href={`mailto:${followUp.clientContact.email}`}
+                                    className="text-blue-600 underline text-xs"
+                                >
+                                    {followUp.clientContact.email}
+                                </a>
+                                <p className="text-xs">{followUp.clientContact.phone}</p>
+                            </div>
+                            <div className="text-sm text-gray-700 mb-2">
+                                <p><strong>Descripción:</strong> {followUp.description}</p>
+                            </div>
+                            <div className="text-sm text-gray-700">
+                                <p><strong>Notas Adicionales:</strong> {followUp.additionalNotes}</p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
-        ))}
-    </div>
-</div>
-
         </div>
     );
 };

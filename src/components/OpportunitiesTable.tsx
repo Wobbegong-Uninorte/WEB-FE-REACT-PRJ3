@@ -1,7 +1,9 @@
+//OpportunitiesTable.tsx
+
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
-import DeleteOpportunityDialog from './DeleteOpportunityDialog';
+import DeleteDialog from './DeleteDialog';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import UpdateOpportunity from './UpdateOpportunity';
 
@@ -62,14 +64,12 @@ const OpportunitiesTable = () => {
         throw new Error(`Error al eliminar la oportunidad: ${response.statusText}`);
       }
   
-      // Asegúrate de que la respuesta fue exitosa y filtra la oportunidad correctamente
       setOpportunities(prevOpportunities => {
         const updatedOpportunities = prevOpportunities.filter(opp => opp.id !== id);
-        console.log('Oportunidades actualizadas:', updatedOpportunities); // Verifica la lista después de la eliminación
+        console.log('Oportunidades actualizadas:', updatedOpportunities);
         return updatedOpportunities;
       });
   
-      // Ajustar la página si es necesario
       const remainingItems = opportunities.length - 1;
       const maxPages = Math.ceil(remainingItems / resultsPerPage);
       if (currentPage >= maxPages) {
@@ -177,18 +177,15 @@ const OpportunitiesTable = () => {
               <th className="py-3 px-4 text-center font-semibold w-[120px]">Fecha Estimada</th>
               <th className="py-3 px-4 text-center font-semibold w-[120px]">Estado</th>
               <th className="py-3 px-4 text-center font-semibold w-[250px]">Acciones</th>
-
             </tr>
           </thead>
           <tbody>
             {currentOpportunities.map((opportunity, index) => (
               <tr 
                 key={opportunity.id}
-
                 className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-sm text-gray-700`}
               >
                 <td className="py-4 px-2 text-center w-[120px]" onClick={() => handleOpportunityClick(opportunity)}>
-
                   {opportunity.businessName}
                 </td>
                 <td className="py-4 px-2 text-center w-[120px]">{opportunity.businessLine}</td>
@@ -219,10 +216,12 @@ const OpportunitiesTable = () => {
                     >
                       Actualizar
                     </button>
-                    <DeleteOpportunityDialog
-                      opportunityId={opportunity.id}
-                      opportunityDescription={opportunity.description}
+                    <DeleteDialog
+                      itemId={opportunity.id}
+                      itemDescription={opportunity.businessName}
+                      itemType="opportunity"
                       onDelete={handleDeleteOpportunity}
+                      triggerClassName="bg-red-600 text-white px-3 py-1 rounded-r-full flex items-center justify-center text-sm hover:bg-red-700 transition-colors duration-200"
                     />
                   </div>
                 </td>

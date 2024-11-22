@@ -63,6 +63,37 @@ const FollowUpsTable = () => {
     }
   };
 
+  const handleDeleteActivity = async (followUpId: string, activityId: string) => {
+    // Actualizar el estado localmente antes de realizar la solicitud
+    setFollowUps(prevFollowUps =>
+      prevFollowUps.map(followUp =>
+        followUp.id === followUpId
+          ? {
+              ...followUp,
+              followUpActivities: followUp.followUpActivities.filter(activity => activity.id !== activityId),
+            }
+          : followUp
+      )
+    );
+  
+    try {
+      // Realizar la solicitud al servidor
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow/${followUpId}/activities/${activityId}`, {
+        method: 'DELETE',
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Error al eliminar del servidor: ${response.status} ${response.statusText}`);
+      }
+  
+      console.log('Actividad eliminada del servidor con éxito');
+    } catch (error) {
+      // Manejar errores del servidor y revertir cambios si es necesario
+      console.error('Error al eliminar la actividad del servidor:', error);
+      setError('No se pudo sincronizar la eliminación con el servidor. Por favor, intente de nuevo.');
+    }
+  };
+
   // Manejo de clic para actualizar una actividad específica
   const handleUpdateClick = (followUp: FollowUp, activityId: string) => {
     console.log("FollowUp seleccionado:", followUp);
@@ -140,13 +171,21 @@ const FollowUpsTable = () => {
                   <td className="py-4 px-2 text-center">{activity.description}</td>
                   <td className="py-4 px-2 text-center">{activity.additionalNotes || "N/A"}</td>
                   <td className="py-4 px-2 text-center">
-                  <button
-  className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-colors"
-  onClick={() => handleUpdateClick(followUp, activity.id)} // Aquí usas activity.id
+  <div className="flex justify-center gap-1">
+    <button
+      className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-colors"
+      onClick={() => handleUpdateClick(followUp, activity.id)} // Actualizar
+    >
+      Actualizar
+    </button>
+    <button
+  className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
+  onClick={() => handleDeleteActivity(followUp.id, activity.id)}
 >
-  Actualizar
+  Eliminar
 </button>
-                  </td>
+  </div>
+</td>
                 </tr>
               ))
             )}
