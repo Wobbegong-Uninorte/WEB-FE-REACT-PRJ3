@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import UpdateFollowUp from "./UpdateFollowUp";
+import DeleteDialog from "./DeleteDialog";
 
 interface ClientContact {
   firstName: string;
@@ -11,7 +12,7 @@ interface ClientContact {
 }
 
 interface FollowUpActivity {
-  id: string; // Identificador único
+  id: string;
   contactType: string;
   contactDate: string;
   clientContact: ClientContact;
@@ -33,7 +34,6 @@ const FollowUpsTable = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const resultsPerPage = 8;
 
-  // Estados para la modal de edición
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedFollowUp, setSelectedFollowUp] = useState<FollowUp | null>(null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
@@ -42,7 +42,6 @@ const FollowUpsTable = () => {
     fetchFollowUps();
   }, []);
 
-  // Función para obtener los datos de seguimientos
   const fetchFollowUps = async () => {
     setLoading(true);
     setError(null);
@@ -54,7 +53,7 @@ const FollowUpsTable = () => {
       }
 
       const data = await response.json();
-      setFollowUps(Array.isArray(data) ? data : [data]); // Asegura consistencia en la estructura
+      setFollowUps(Array.isArray(data) ? data : [data]);
     } catch (err) {
       console.error("Error al obtener los seguimientos:", err);
       setError("No se pudo cargar la información. Intente nuevamente.");
@@ -63,58 +62,63 @@ const FollowUpsTable = () => {
     }
   };
 
-  const handleDeleteActivity = async (followUpId: string, activityId: string) => {
-    // Actualizar el estado localmente antes de realizar la solicitud
-    setFollowUps(prevFollowUps =>
-      prevFollowUps.map(followUp =>
-        followUp.id === followUpId
-          ? {
-              ...followUp,
-              followUpActivities: followUp.followUpActivities.filter(activity => activity.id !== activityId),
-            }
-          : followUp
-      )
-    );
-  
-    try {
-      // Realizar la solicitud al servidor
-      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow/${followUpId}/activities/${activityId}`, {
-        method: 'DELETE',
-      });
-  
-      if (!response.ok) {
-        throw new Error(`Error al eliminar del servidor: ${response.status} ${response.statusText}`);
-      }
-  
-      console.log('Actividad eliminada del servidor con éxito');
-    } catch (error) {
-      // Manejar errores del servidor y revertir cambios si es necesario
-      console.error('Error al eliminar la actividad del servidor:', error);
-      setError('No se pudo sincronizar la eliminación con el servidor. Por favor, intente de nuevo.');
-    }
-  };
-
-  // Manejo de clic para actualizar una actividad específica
   const handleUpdateClick = (followUp: FollowUp, activityId: string) => {
-    console.log("FollowUp seleccionado:", followUp);
-    console.log("Activity ID seleccionado:", activityId);
     setSelectedFollowUp(followUp);
     setSelectedActivityId(activityId);
     setShowUpdateModal(true);
   };
 
-  // Paginación: Seleccionar elementos actuales
+  const handleDeleteActivity = async (followUpId: string, activityId: string) => {
+    try {
+      // Encontrar el followUp específico
+      const followUp = followUps.find(f => f.id === followUpId);
+      if (!followUp) return;
+
+      // Crear una nueva versión del followUp sin la actividad específica
+      const updatedFollowUp = {
+        ...followUp,
+        followUpActivities: followUp.followUpActivities.filter(
+          activity => activity.id !== activityId
+        )
+      };
+
+      // Enviar la actualización al servidor
+      const response = await fetch(
+        `https://web-fe-react-prj3-api.onrender.com/follow/${followUpId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedFollowUp),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar la actividad");
+      }
+
+      // Actualizar el estado local
+      setFollowUps(prevFollowUps =>
+        prevFollowUps.map(f =>
+          f.id === followUpId ? updatedFollowUp : f
+        )
+      );
+    } catch (err) {
+      console.error("Error al eliminar la actividad:", err);
+      setError("No se pudo eliminar la actividad. Intente nuevamente.");
+    }
+  };
+
   const currentFollowUps = followUps.slice(
     currentPage * resultsPerPage,
     (currentPage + 1) * resultsPerPage
   );
 
-  // Cambiar página
   const handlePageChange = (selectedItem: { selected: number }) => {
     setCurrentPage(selectedItem.selected);
   };
 
-  // Renderizar loading, error o tabla
   if (loading) {
     return <div className="flex justify-center p-4">Cargando...</div>;
   }
@@ -151,7 +155,6 @@ const FollowUpsTable = () => {
           <tbody>
             {currentFollowUps.map((followUp) =>
               followUp.followUpActivities.map((activity, index) => (
-
                 <tr
                   key={activity.id}
                   className={`${
@@ -171,21 +174,22 @@ const FollowUpsTable = () => {
                   <td className="py-4 px-2 text-center">{activity.description}</td>
                   <td className="py-4 px-2 text-center">{activity.additionalNotes || "N/A"}</td>
                   <td className="py-4 px-2 text-center">
-  <div className="flex justify-center gap-1">
-    <button
-      className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-colors"
-      onClick={() => handleUpdateClick(followUp, activity.id)} // Actualizar
-    >
-      Actualizar
-    </button>
-    <button
-  className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
-  onClick={() => handleDeleteActivity(followUp.id, activity.id)}
->
-  Eliminar
-</button>
-  </div>
-</td>
+                    <div className="flex justify-center gap-1">
+                      <button
+                        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-colors"
+                        onClick={() => handleUpdateClick(followUp, activity.id)}
+                      >
+                        Actualizar
+                      </button>
+                      <DeleteDialog
+                        itemId={activity.id}
+                        itemDescription={`${activity.contactType} - ${activity.contactDate}`}
+                        itemType="activity"
+                        onDelete={() => handleDeleteActivity(followUp.id, activity.id)}
+                        triggerClassName="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
+                      />
+                    </div>
+                  </td>
                 </tr>
               ))
             )}
@@ -205,20 +209,19 @@ const FollowUpsTable = () => {
         nextClassName="rounded-md px-2 py-1 text-gray-600 hover:text-blue-500 transition duration-200 ease-in-out"
       />
 
-{showUpdateModal && selectedFollowUp && selectedActivityId && (
-  <UpdateFollowUp
-    key={`${selectedFollowUp.id}-${selectedActivityId}`} // Asegura un re-render único
-    followUp={selectedFollowUp}
-    activityId={selectedActivityId}
-    onClose={() => {
-      setShowUpdateModal(false);
-      setSelectedFollowUp(null);
-      setSelectedActivityId(null);
-    }}
-    onUpdate={() => fetchFollowUps()}
-  />
-)}
-
+      {showUpdateModal && selectedFollowUp && selectedActivityId && (
+        <UpdateFollowUp
+          key={`${selectedFollowUp.id}-${selectedActivityId}`}
+          followUp={selectedFollowUp}
+          activityId={selectedActivityId}
+          onClose={() => {
+            setShowUpdateModal(false);
+            setSelectedFollowUp(null);
+            setSelectedActivityId(null);
+          }}
+          onUpdate={() => fetchFollowUps()}
+        />
+      )}
     </div>
   );
 };
