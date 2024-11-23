@@ -173,10 +173,10 @@ const FollowUpsTable = () => {
                   <td className="py-4 px-2 text-center">{activity.salesExecutive}</td>
                   <td className="py-4 px-2 text-center">{activity.description}</td>
                   <td className="py-4 px-2 text-center">{activity.additionalNotes || "N/A"}</td>
-                  <td className="py-4 px-2 text-center">
+                  <td className="text-center py-4 pr-5">
                     <div className="flex justify-center gap-1">
                       <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-colors"
+                        className="bg-[#FF9800] text-white px-4 py-1 rounded-l-full flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                         onClick={() => handleUpdateClick(followUp, activity.id)}
                       >
                         Actualizar
@@ -186,8 +186,8 @@ const FollowUpsTable = () => {
                         itemDescription={`${activity.contactType} - ${activity.contactDate}`}
                         itemType="activity"
                         onDelete={() => handleDeleteActivity(followUp.id, activity.id)}
-                        triggerClassName="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
-                      />
+                        triggerClassName="bg-red-600 text-white px-3 py-1 rounded-r-full flex items-center justify-center text-sm hover:bg-red-700 transition-colors duration-200"
+                        />
                     </div>
                   </td>
                 </tr>
