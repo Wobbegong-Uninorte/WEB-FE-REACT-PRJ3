@@ -1,3 +1,5 @@
+//OppDetailsLow.tsx
+
 import React, { useState, useEffect } from 'react';
 import { FaClipboardList, FaRegCalendarAlt, FaCheckCircle, FaExclamationCircle, FaDollarSign, FaCalendarDay } from 'react-icons/fa';
 
