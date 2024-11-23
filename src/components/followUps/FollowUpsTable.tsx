@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import UpdateFollowUp from "./UpdateFollowUp";
-import DeleteDialog from "./DeleteDialog";
+import DeleteDialog from "../dialogs/DeleteDialog";
 
 interface ClientContact {
   firstName: string;

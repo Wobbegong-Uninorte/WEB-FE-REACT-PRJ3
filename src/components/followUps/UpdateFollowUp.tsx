@@ -37,7 +37,7 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
   onUpdate,
 }) => {
   const specificActivity = followUp.followUpActivities.find(
-    (activity) => activity.id === activityId // Uso correcto de activity.id
+    (activity) => activity.id === activityId
   );
 
   if (!specificActivity) {
@@ -62,7 +62,7 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
     field: keyof FollowUpActivity
   ) => {
     const { value } = e.target;
@@ -90,11 +90,26 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
     e.preventDefault();
     setError(null);
 
+    // Validación: todos los campos deben estar llenos
+    if (
+      !formData.contactType ||
+      !formData.contactDate ||
+      !formData.clientContact.firstName ||
+      !formData.clientContact.lastName ||
+      !formData.clientContact.email ||
+      !formData.clientContact.phone ||
+      !formData.salesExecutive ||
+      !formData.description
+    ) {
+      setError("Por favor completa todos los campos obligatorios.");
+      return;
+    }
+
     try {
       const updatedFollowUp: FollowUp = {
         ...followUp,
         followUpActivities: followUp.followUpActivities.map((activity) =>
-          activity.id === activityId ? formData : activity // Actualizar actividad específica
+          activity.id === activityId ? formData : activity
         ),
       };
 
@@ -123,7 +138,6 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
       setError("No se pudo actualizar el seguimiento. Inténtalo de nuevo.");
     }
   };
-
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
@@ -163,12 +177,16 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
             <label className="block text-sm font-medium text-gray-700">
               Tipo de Contacto
             </label>
-            <input
-              type="text"
+            <select
               value={formData.contactType}
               onChange={(e) => handleInputChange(e, "contactType")}
               className="w-full px-4 py-2 rounded-lg border border-gray-300"
-            />
+            >
+              <option value="">Selecciona una opción</option>
+              <option value="Llamada">Llamada</option>
+              <option value="Correo">Correo</option>
+              <option value="Reunión Presencial">Reunión Presencial</option>
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -201,6 +219,59 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
                 className="w-1/2 px-4 py-2 rounded-lg border border-gray-300"
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Correo Electrónico
+            </label>
+            <input
+              type="email"
+              value={formData.clientContact.email}
+              onChange={(e) => handleContactChange(e, "email")}
+              className="w-full px-4 py-2 rounded-lg border border-gray-300"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Teléfono
+            </label>
+            <input
+              type="text"
+              value={formData.clientContact.phone}
+              onChange={(e) => handleContactChange(e, "phone")}
+              className="w-full px-4 py-2 rounded-lg border border-gray-300"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Ejecutivo de Ventas
+            </label>
+            <input
+              type="text"
+              value={formData.salesExecutive}
+              onChange={(e) => handleInputChange(e, "salesExecutive")}
+              className="w-full px-4 py-2 rounded-lg border border-gray-300"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Descripción
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => handleInputChange(e, "description")}
+              className="w-full px-4 py-2 rounded-lg border border-gray-300"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Notas Adicionales
+            </label>
+            <textarea
+              value={formData.additionalNotes || ""}
+              onChange={(e) => handleInputChange(e, "additionalNotes")}
+              className="w-full px-4 py-2 rounded-lg border border-gray-300"
+            />
           </div>
           <div className="flex justify-end gap-4">
             <button
