@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
-import DeleteDialog from './DeleteDialog';
+import DeleteDialog from '../dialogs/DeleteDialog';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import UpdateOpportunity from './UpdateOpportunity';
 

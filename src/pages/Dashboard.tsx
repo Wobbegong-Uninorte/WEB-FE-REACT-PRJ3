@@ -1,5 +1,5 @@
-import StatusPieChart from "../components/StatusPieChart";
-import BusinessLinePieChart from "../components/BusinessLinePieChart";
+import StatusPieChart from "../components/graphics/StatusPieChart";
+import BusinessLinePieChart from "../components/graphics/BusinessLinePieChart";
 import MainLayout from "../layouts/MainLayout";
 
 const Dashboard = () => {

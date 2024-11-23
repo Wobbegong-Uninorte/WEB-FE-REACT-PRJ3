@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Box, Button, Checkbox, FormControlLabel } from '@mui/material';
-import { ClientType, ContactType } from '../types/clients';
+import { ClientType, ContactType } from '../../types/clients';
 
 type ClientFormProps = {
   client: ClientType;

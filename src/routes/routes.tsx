@@ -1,10 +1,10 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import Home from '../pages/Home';
 import CreateClient from '../pages/CreateClient';
-import ClientDetailTop from "../components/ClientDetailTop";
+import ClientDetailTop from "../components/clients/ClientDetailTop";
 import ClientDetails from '../pages/ClientDetails';
 import OpportunitiesPage from '../pages/OpportunitiesPage'; // Asegúrate de que el nombre y ruta de importación sean correctos
-import CreateOpportunity from '../components/CreateOpportunity'; // Asegúrate de que el nombre y ruta de importación sean correctos
+import CreateOpportunity from '../components/opportunities/CreateOpportunity'; // Asegúrate de que el nombre y ruta de importación sean correctos
 import OpportunityDetailsPage from '../pages/OppDetailsPage';
 import Dashboard from '../pages/Dashboard';
 import FollowPage from "../pages/FollowPage";

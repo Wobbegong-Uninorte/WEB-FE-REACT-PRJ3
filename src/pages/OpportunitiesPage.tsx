@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react'; 
 import MainLayout from '../layouts/MainLayout';
-import OpportunitiesTable from '../components/OpportunitiesTable';
+import OpportunitiesTable from '../components/opportunities/OpportunitiesTable';
 
 const OpportunitiesPage: React.FC = () => {
   const navigate = useNavigate();

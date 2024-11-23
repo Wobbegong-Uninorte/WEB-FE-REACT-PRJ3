@@ -2,7 +2,7 @@
 
 import React from "react";
 import { TextField, Box, Button, MenuItem, FormControl, InputLabel, Select, SelectChangeEvent } from "@mui/material";
-import { Opportunities } from "../types/opportunities";
+import { Opportunities } from "../../types/opportunities";
 
 type Client = {
   id: number;

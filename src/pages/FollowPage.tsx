@@ -2,7 +2,7 @@ import React from 'react';
 import MainLayout from '../layouts/MainLayout';
 import { PlusCircle } from 'lucide-react'; 
 import { Button } from '@mui/material';
-import FollowUpsTable from "../components/FollowUpsTable";
+import FollowUpsTable from "../components/followUps/FollowUpsTable";
 
 const FollowPage: React.FC = () => {
     
