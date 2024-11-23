@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef  } from "react";
 
 interface ClientContact {
   firstName: string;
@@ -102,7 +102,9 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
       !formData.description
     ) {
       setError("Por favor completa todos los campos obligatorios.");
+      triggerError(); // Línea añadida
       return;
+
     }
 
     try {
@@ -136,12 +138,31 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
     } catch (error) {
       console.error("Error al actualizar el seguimiento:", error);
       setError("No se pudo actualizar el seguimiento. Inténtalo de nuevo.");
+      triggerError(); // Línea añadida
+      
     }
   };
+  const popupRef = useRef<HTMLDivElement | null>(null);
+
+  const [isError, setIsError] = useState(false); // Línea añadida
+  const triggerError = () => {
+    setIsError(true); // Cambia el estado del botón a error
+  
+    setTimeout(() => {
+      if (popupRef.current) {
+        popupRef.current.scrollTo({ top: 0, behavior: "smooth" }); // el scroll del contenedor al top
+      }
+    }, 500); // 0.5 segundos de retraso
+  
+    setTimeout(() => setIsError(false), 3000); // renicio del estado después de 3 segundos
+  };
+  
+  
+  
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-[800px] max-h-[90vh] overflow-y-auto">
+      <div ref={popupRef} className="bg-white p-8 rounded-xl shadow-2xl w-[800px] max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-8 border-b pb-4">
           <h2 className="text-2xl font-bold text-gray-800">
             Actualizar Actividad de Seguimiento
@@ -283,10 +304,13 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
             </button>
             <button
               type="submit"
-              className="px-6 py-2 rounded-lg bg-blue-600 text-white"
+              className={`px-6 py-2 rounded-lg text-white ${
+                isError ? "bg-red-600" : "bg-blue-600"
+              }`}
             >
-              Guardar Cambios
+              {isError ? "Error" : "Guardar Cambios"}
             </button>
+
           </div>
         </form>
       </div>
