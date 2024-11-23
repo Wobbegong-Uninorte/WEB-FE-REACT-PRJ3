@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef  } from 'react';
 
 interface Opportunity {
   id: number;
@@ -45,8 +45,14 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    const validationError = validateFormData();
+    if (validationError) {
+      setError(validationError);
+      return; // Detener la ejecución si hay un error
+    }
+  
     try {
-
       // Cambiar el método a PUT para actualizar el cliente
       const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${client.id}`, {
         method: 'PUT',
@@ -55,22 +61,27 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
         },
         body: JSON.stringify(formData),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Error al actualizar el cliente');
       }
-
+  
+      // Si la actualización fue exitosa
       onUpdate(formData); // Actualiza el cliente en ClientsTable
       onClose();          // Cierra el modal
-
-      // Refrescar la página inmediatamente
-      window.location.reload();
     } catch (error) {
       console.error('Error al actualizar el cliente:', error);
       setError('No se pudo actualizar el cliente. Inténtalo de nuevo.');
+      // Desplazarse al inicio del modal si hay error
+      setTimeout(() => {
+        if (popupRef.current) {
+          popupRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 500); // Retraso de 0.5 segundos
     }
   };
+  
 
   const handleContactSelect = (index: number) => {
     setSelectedContactIndex(index);
@@ -92,9 +103,39 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
     }
   };
 
+  const validateFormData = () => {
+    const requiredFields = ['nit', 'name', 'email', 'phone', 'city', 'country', 'address'];
+    for (const field of requiredFields) {
+      const value = formData[field as keyof Client];
+      if (typeof value !== 'string' || !value.trim()) {
+        setError("Por favor completa todos los campos obligatorios.");
+        triggerError(); // Cambia el estado de error
+        return "Por favor completa todos los campos obligatorios."; // Retorna un mensaje explícito
+      }
+    }
+    return null; // Sin errores
+  };
+  
+
+  
+  const popupRef = useRef<HTMLDivElement | null>(null); // Referencia para el contenedor
+  const [isError, setIsError] = useState(false); // Línea 
+  
+  const triggerError = () => {
+    setIsError(true); // Cambia el estado del botón a error
+  
+    setTimeout(() => {
+      if (popupRef.current) {
+        popupRef.current.scrollTo({ top: 0, behavior: "smooth" }); // el scroll del contenedor al top
+      }
+    }, 500); // 0.5 segundos de retraso
+  
+    setTimeout(() => setIsError(false), 3000); // renicio del estado después de 3 segundos
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-[800px] max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-in-out 
+      <div ref={popupRef} className="bg-white p-8 rounded-xl shadow-2xl w-[800px] max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-in-out 
         [&::-webkit-scrollbar]:w-2
         [&::-webkit-scrollbar-track]:bg-gray-100
         [&::-webkit-scrollbar-track]:rounded-lg
@@ -135,7 +176,7 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
                   NIT
                 </label>
                 <input
-                  type="text"
+                  type="number"
                   name="nit"
                   value={formData.nit}
                   onChange={handleChange}
@@ -331,9 +372,11 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              className={`px-6 py-2 rounded-lg text-white ${
+                isError ? "bg-red-600" : "bg-blue-600"
+              }`}
             >
-              Guardar Cambios
+              {isError ? "Error" : "Guardar Cambios"}
             </button>
           </div>
         </form>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef} from 'react';
 
 interface Opportunity {
   id: string;
@@ -46,6 +46,20 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
     }
   };
 
+
+  const [isError, setIsError] = useState(false); // Línea 
+  const triggerError = () => {
+    setIsError(true); // Cambia el estado del botón a error
+  
+    setTimeout(() => {
+      if (popupRef.current) {
+        popupRef.current.scrollTo({ top: 0, behavior: "smooth" }); // el scroll del contenedor al top
+      }
+    }, 500); // 0.5 segundos de retraso
+  
+    setTimeout(() => setIsError(false), 3000); // renicio del estado después de 3 segundos
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -58,20 +72,56 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
     }));
   };
 
+
+  const validateFormData = () => {
+    const requiredFields = [
+      'businessName',
+      'businessLine',
+      'description',
+      'estimatedValue',
+      'estimatedDate',
+      'status',
+    ];
+  
+    for (const field of requiredFields) {
+      const value = formData[field as keyof Opportunity];
+  
+      if (value == null || value === '') { // Verifica null, undefined o string vacía
+        setError("Por favor completa todos los campos obligatorios.");
+        triggerError(); // Cambia el estado de error
+        return "Por favor completa todos los campos obligatorios.";
+      }
+    }
+  
+    return null; // Sin errores
+  };
+  
+  
+
+  const popupRef = useRef<HTMLDivElement | null>(null); // Referencia para el contenedor
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+  
+    // Validar los datos del formulario
+    const validationError = validateFormData();
+    if (validationError) {
+      setError(validationError);
+      return; // Detener la ejecución si hay un error
+    }
+  
     try {
+      // Formatear la fecha a "YYYY-MM-DD"
       const dateOnly = new Date(formData.estimatedDate)
         .toISOString()
         .split('T')[0];
-
+  
       const formattedData = {
         ...formData,
-        estimatedDate: dateOnly
+        estimatedDate: dateOnly,
       };
-
-      console.log('Formatted data:', formattedData); // Para verificar que la fecha está correcta
-
+  
+      // Enviar la solicitud de actualización
       const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/opportunities/${opportunity.id}`, {
         method: 'PUT',
         headers: {
@@ -79,29 +129,39 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
         },
         body: JSON.stringify(formattedData),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Error al actualizar la oportunidad');
       }
-
+  
+      // Actualizar la oportunidad en la interfaz de usuario
       const updatedOpportunity = {
         ...formData,
-        estimatedDate: new Date(dateOnly)
+        estimatedDate: new Date(dateOnly),
       };
-
+  
       onUpdate(updatedOpportunity);
       onClose();
       window.location.reload();
     } catch (error) {
       console.error('Error al actualizar la oportunidad:', error);
       setError('No se pudo actualizar la oportunidad. Inténtalo de nuevo.');
+  
+      // Desplazar al inicio del modal en caso de error
+      setTimeout(() => {
+        if (popupRef.current) {
+          popupRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 500); // Retraso de 0.5 segundos
     }
   };
+  
+  
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50">
-      <div className="bg-white p-8 rounded-xl shadow-2xl w-[800px] max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-in-out 
+      <div ref={popupRef} className="bg-white p-8 rounded-xl shadow-2xl w-[800px] max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-in-out 
         [&::-webkit-scrollbar]:w-2
         [&::-webkit-scrollbar-track]:bg-gray-100
         [&::-webkit-scrollbar-track]:rounded-lg
@@ -134,6 +194,7 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
           </div>
         )}
 
+
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="grid grid-cols-12 gap-6">
             {/* Información del Negocio */}
@@ -155,14 +216,20 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
                 <label className="block text-sm font-medium text-gray-700 mb-1 transition-all group-focus-within:text-blue-600">
                   Línea de Negocio
                 </label>
-                <input
-                  type="text"
+                <select
                   name="businessLine"
                   value={formData.businessLine}
                   onChange={handleChange}
                   className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ease-in-out placeholder-gray-400 group-hover:border-gray-400"
-                />
+                >
+                  <option value="" disabled>Selecciona una opción</option>
+                  <option value="Outsourcing recursos">Outsourcing recursos</option>
+                  <option value="Desarrollo web">Desarrollo web</option>
+                  <option value="Desarrollo mobile">Desarrollo mobile</option>
+                  <option value="Consultoría TI">Consultoría TI</option>
+                </select>
               </div>
+
             </div>
 
             {/* Información Financiera y Fechas */}
@@ -269,9 +336,11 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              className={`px-6 py-2 rounded-lg text-white ${
+                isError ? "bg-red-600" : "bg-blue-600"
+              }`}
             >
-              Guardar Cambios
+              {isError ? "Error" : "Guardar Cambios"}
             </button>
           </div>
         </form>
