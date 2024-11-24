@@ -1,4 +1,6 @@
+import { FollowUpActivity } from "./followups";
 export interface Opportunities {
+  id: string;
   client: string;
   businessName: string;
   businessLine:
@@ -10,4 +12,5 @@ export interface Opportunities {
   estimatedValue: number;
   estimatedDate: Date;
   status: "Apertura" | "En Estudio" | "Orden de Compra" | "Ejecutada";
+  followUps?: FollowUpActivity;
 }

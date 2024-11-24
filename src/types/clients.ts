@@ -1,4 +1,5 @@
 import { Opportunities } from "./opportunities";
+
 export type ContactType = {
   firstName: string;
   lastName: string;
