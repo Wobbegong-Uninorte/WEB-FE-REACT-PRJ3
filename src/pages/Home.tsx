@@ -15,17 +15,12 @@ const Home: React.FC = () => {
   return (
     <MainLayout>
       <div>
-      <div>
         <Button
-          variant="contained"
           variant="contained"
           color="primary"
           size="small"
           startIcon={<PlusCircle size={16} />}
-          size="small"
-          startIcon={<PlusCircle size={16} />}
           onClick={handleCreateClientClick}
-          style={{ paddingLeft: '8px', fontWeight: 'bold'}}
           style={{ paddingLeft: '8px', fontWeight: 'bold'}}
         >
           Crear Cliente
