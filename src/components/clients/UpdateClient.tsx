@@ -289,7 +289,7 @@ const UpdateClient: React.FC<UpdateClientProps> = ({ client, onClose, onUpdate }
 
                 {/* Formulario de contactos */}
                 {contactFormData && (
-                  <div className="col-span-12 grid grid-cols-12 gap-6">
+                  <div ref={popupRef} className="col-span-12 grid grid-cols-12 gap-6">
                     {/* Nombre */}
                     <div className="col-span-12 md:col-span-6 group">
                       <label className="block text-sm font-medium text-gray-700 mb-1 transition-all group-focus-within:text-blue-600">

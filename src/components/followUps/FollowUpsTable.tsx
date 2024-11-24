@@ -38,6 +38,9 @@ const FollowUpsTable = () => {
   const [selectedFollowUp, setSelectedFollowUp] = useState<FollowUp | null>(null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  
   useEffect(() => {
     fetchFollowUps();
   }, []);
@@ -67,6 +70,13 @@ const FollowUpsTable = () => {
     setSelectedActivityId(activityId);
     setShowUpdateModal(true);
   };
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   const handleDeleteActivity = async (followUpId: string, activityId: string) => {
     try {
@@ -177,7 +187,9 @@ const FollowUpsTable = () => {
                     <div className="flex justify-center gap-1">
                       <button
                         className="bg-[#FF9800] text-white px-4 py-1 rounded-l-full flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                        onClick={() => handleUpdateClick(followUp, activity.id)}
+                        onClick={() => {
+                          handleUpdateClick(followUp, activity.id);
+                        }}
                       >
                         Actualizar
                       </button>
@@ -219,8 +231,18 @@ const FollowUpsTable = () => {
             setSelectedFollowUp(null);
             setSelectedActivityId(null);
           }}
-          onUpdate={() => fetchFollowUps()}
+          onUpdate={() => {
+            fetchFollowUps(); 
+            setToastMessage(`Los datos de seguimiento se han actualizado correctamente.`);
+            setShowToast(true);
+          }}
         />
+      )}
+
+      {showToast && (
+        <div className="fixed mt-20 top-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-all transform duration-500 ease-in-out z-50">
+          {toastMessage} 🎉
+        </div>
       )}
     </div>
   );

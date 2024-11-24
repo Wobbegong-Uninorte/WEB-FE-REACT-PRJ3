@@ -90,7 +90,6 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
     e.preventDefault();
     setError(null);
 
-    // Validación: todos los campos deben estar llenos
     if (
       !formData.contactType ||
       !formData.contactDate ||
@@ -102,7 +101,7 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
       !formData.description
     ) {
       setError("Por favor completa todos los campos obligatorios.");
-      triggerError(); // Línea añadida
+      triggerError(); 
       return;
 
     }
@@ -144,7 +143,7 @@ const UpdateFollowUp: React.FC<UpdateFollowUpProps> = ({
   };
   const popupRef = useRef<HTMLDivElement | null>(null);
 
-  const [isError, setIsError] = useState(false); // Línea añadida
+  const [isError, setIsError] = useState(false); 
   const triggerError = () => {
     setIsError(true); // Cambia el estado del botón a error
   

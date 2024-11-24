@@ -47,9 +47,13 @@ const ClientsTable = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | null>(null);
 
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
   useEffect(() => {
     fetchClients();
   }, []);
+
 
   const fetchClients = async () => {
     try {
@@ -68,6 +72,13 @@ const ClientsTable = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   const toggleClientStatus = async (clientId: number, newStatus: boolean) => {
     setUpdatingClientId(clientId);
@@ -170,6 +181,8 @@ const ClientsTable = () => {
     } finally {
       setUpdatingClientId(null);
       setShowUpdateModal(false);
+      setToastMessage(`Los datos del cliente se han actualizado correctamente.`);
+      setShowToast(true);
     }
   };
 
@@ -263,6 +276,12 @@ const ClientsTable = () => {
                 onUpdate={handleClientUpdate}
               />
             )}
+
+          {showToast && (
+            <div className="fixed mt-20 top-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-all transform duration-500 ease-in-out z-50">
+              {toastMessage} 🎉
+            </div>
+          )}
       </div>
     );
 };

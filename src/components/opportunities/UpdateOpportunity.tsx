@@ -141,9 +141,12 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
         estimatedDate: new Date(dateOnly),
       };
   
+      // Llamar al callback para actualizar el estado en el componente principal
       onUpdate(updatedOpportunity);
+  
+      // Cerrar el modal después de la actualización
       onClose();
-      window.location.reload();
+  
     } catch (error) {
       console.error('Error al actualizar la oportunidad:', error);
       setError('No se pudo actualizar la oportunidad. Inténtalo de nuevo.');
@@ -156,6 +159,7 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
       }, 500); // Retraso de 0.5 segundos
     }
   };
+  
   
   
 
