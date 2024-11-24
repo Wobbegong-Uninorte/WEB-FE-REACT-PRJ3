@@ -11,6 +11,7 @@ const CreateOpportunity: React.FC = () => {
   const navigate = useNavigate();
 
   const initialOpportunityState: Opportunities = {
+    id: "",
     client: "",
     businessName: "",
     businessLine: "outsourcing recursos",
