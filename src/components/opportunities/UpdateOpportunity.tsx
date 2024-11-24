@@ -146,6 +146,7 @@ const UpdateOpportunity: React.FC<UpdateOpportunityProps> = ({ opportunity, onCl
   
       // Cerrar el modal después de la actualización
       onClose();
+      window.location.reload();
   
     } catch (error) {
       console.error('Error al actualizar la oportunidad:', error);

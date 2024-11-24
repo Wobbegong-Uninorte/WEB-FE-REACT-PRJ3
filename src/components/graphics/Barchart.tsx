@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-// Interfaces para los datos
 interface Opportunity {
   id: string;
   businessName: string;
@@ -41,7 +40,6 @@ interface ChartData {
 export function Barchart() {
   const [data, setData] = useState<ChartData[]>([]);
 
-  // Función para obtener y procesar los datos
   const fetchData = async () => {
     try {
       const [clientsResponse, opportunitiesResponse] = await Promise.all([
@@ -52,7 +50,6 @@ export function Barchart() {
       const clients: Client[] = await clientsResponse.json();
       const opportunities: Opportunity[] = await opportunitiesResponse.json();
 
-      // Procesar datos
       const chartData: ChartData[] = clients.map((client: Client) => {
         const clientOpportunities = client.opportunities.map((oppId: string) =>
           opportunities.find((opp: Opportunity) => opp.id === oppId)
@@ -81,10 +78,10 @@ export function Barchart() {
 
   // useEffect con polling cada 10 segundos
   useEffect(() => {
-    fetchData(); // Cargar datos inicialmente
+    fetchData();
     const intervalId = setInterval(fetchData, 10000); // Repetir cada 10 segundos
 
-    return () => clearInterval(intervalId); // Limpiar el intervalo al desmontar el componente
+    return () => clearInterval(intervalId); // el intervalo se limpia al desmontar el componente
   }, []);
 
   return (
