@@ -9,10 +9,10 @@ import {
   FaDollarSign,
   FaCalendarDay,
 } from "react-icons/fa";
-import FollowUpModal from "./FollowUpModal";
+import FollowUpModal from "../followUps/FollowUpModal";
 import {Button} from "@mui/material";
 import {PlusCircle} from 'lucide-react';
-import { ContactType } from "../types/clients";
+import { ContactType } from "../../types/clients";
 interface Opportunity {
   id: string;
   businessName: string;

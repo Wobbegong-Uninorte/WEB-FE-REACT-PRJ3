@@ -1,6 +1,6 @@
 import React from 'react';
-import ClientDetailTop from "../components/ClientDetailTop"
-import ClientDetailMid from "../components/ClientDetailMid"
+import ClientDetailTop from "../components/clients/ClientDetailTop"
+import ClientDetailMid from "../components/clients/ClientDetailMid"
 import MainLayout from '../layouts/MainLayout'
 
 const ClientDetailPage: React.FC = () => {

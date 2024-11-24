@@ -1,6 +1,6 @@
 import React from 'react';
 import MainLayout from '../layouts/MainLayout';
-import OppDetailsTop_low from "../components/OppDatailsTop";
+import OppDetailsTop_low from "../components/opportunities/OppDatailsTop";
 
 const OppDetailsPage: React.FC = () => {
     

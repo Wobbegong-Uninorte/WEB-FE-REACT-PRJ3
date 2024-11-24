@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ReactPaginate from 'react-paginate';
-import DeleteDialog from './DeleteDialog';
+import DeleteDialog from '../dialogs/DeleteDialog';
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa';
 import UpdateOpportunity from './UpdateOpportunity';
 
@@ -32,6 +32,9 @@ const OpportunitiesTable = () => {
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [selectedOpportunity, setSelectedOpportunity] = useState<Opportunity | null>(null);
 
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
   useEffect(() => {
     fetchOpportunities();
   }, []);
@@ -53,6 +56,14 @@ const OpportunitiesTable = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
 
   const handleDeleteOpportunity = async (id: string) => {
     try {
@@ -126,11 +137,13 @@ const OpportunitiesTable = () => {
   };
 
   const handleUpdateClick = (opportunity: Opportunity) => {
+
     setSelectedOpportunity(opportunity);
     setShowUpdateModal(true);
   };
 
   const handleOpportunityUpdate = async (updatedOpportunity: Opportunity) => {
+
     try {
       const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/opportunities/${updatedOpportunity.id}`, {
         method: 'PUT',
@@ -151,7 +164,7 @@ const OpportunitiesTable = () => {
     } catch (error) {
       console.error('Error:', error);
       setError('Error al actualizar la oportunidad');
-    }
+    } 
   };
 
   if (loading) {
@@ -247,9 +260,21 @@ const OpportunitiesTable = () => {
         <UpdateOpportunity
           opportunity={selectedOpportunity}
           onClose={() => setShowUpdateModal(false)}
-          onUpdate={handleOpportunityUpdate}
+          onUpdate={() => {
+            handleOpportunityUpdate;
+            setToastMessage(`Los datos de la oportunidad se han actualizado correctamente.`);
+            setShowToast(true);
+          }}
+          
         />
       )}
+                {showToast && (
+            <div className="fixed mt-20 top-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-all transform duration-500 ease-in-out z-50">
+              {toastMessage} 🎉
+            </div>
+          )}
+
+      
     </div>
   );
 };

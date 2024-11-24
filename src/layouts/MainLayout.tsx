@@ -67,31 +67,29 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
             </header>
 
             <div className="flex flex-1">
-                <aside className="w-16 lg:w-64 bg-white shadow-lg h-screen p-3 lg:p-6 transition-all duration-300 transform">
+                <aside className="w-14 pt-4 lg:w-64 bg-white shadow-lg h-screen lg:p-6 transition-all duration-300 transform">
                     <nav aria-label="Sidebar" className="space-y-4">
                         <ul className="space-y-2">
-                            {[
-                                { path: '/', icon: <Users className="h-6 w-6" />, label: 'Clientes' },
-                                { path: '/OpportunitiesPage', icon: <Target className="h-6 w-6" />, label: 'Oportunidades' },
-                                { path: '/FollowPage', icon: <LineChart className="h-6 w-6" />, label: 'Seguimiento' },
-                                { path: '/dashboard', icon: <LayoutDashboard className="h-6 w-6" />, label: 'Dashboard' },
-                            ].map((item) => (
-                                <li key={item.path}>
-                                    <button 
-                                        onClick={() => navigate(item.path)} 
-                                        className="flex items-center text-gray-700 hover:text-blue-600 hover:bg-blue-100 rounded-lg p-3 transition-all duration-300 transform hover:scale-x-105 focus:ring-2 focus:ring-blue-500"
-                                    >
-                                        {item.icon}
-                                        <span className="font-medium text-lg lg:ml-2 hidden lg:inline-block">
-                                            {item.label}
-                                        </span>
-                                    </button>
-                                </li>
-                            ))}
+                        {[
+                            { path: '/', icon: <Users className="h-7 w-7 lg:h-6 lg:w-6" />, label: 'Clientes' },
+                            { path: '/OpportunitiesPage', icon: <Target className="h-7 w-7 lg:h-6 lg:w-6" />, label: 'Oportunidades' },
+                            { path: '/FollowPage', icon: <LineChart className="h-7 w-7 lg:h-6 lg:w-6" />, label: 'Seguimiento' },
+                            { path: '/dashboard', icon: <LayoutDashboard className="h-7 w-7 lg:h-6 lg:w-6" />, label: 'Dashboard' },
+                        ].map((item) => (
+                            <li key={item.path}>
+                            <button
+                                onClick={() => navigate(item.path)}
+                                className="flex items-center gap-3 w-full rounded-lg px-4 py-3 text-gray-800 transition-all hover:text-gray-900 hover:bg-gray-100"
+                            >
+                                {item.icon}
+                                <span className="hidden lg:inline-block text-lg font-semibold">
+                                {item.label}
+                                </span>
+                            </button>
+                            </li>
+                        ))}
                         </ul>
                     </nav>
-
-
 
                     {/* Sección de actualización en el menú lateral */}
                     <div className="pt-6 mt-6 border-t border-white/30 hidden lg:block">

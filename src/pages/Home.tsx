@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react';
-import ClientsTable from "../components/ClientsTable";
+import ClientsTable from "../components/clients/ClientsTable";
 import MainLayout from '../layouts/MainLayout';
 
 const Home: React.FC = () => {

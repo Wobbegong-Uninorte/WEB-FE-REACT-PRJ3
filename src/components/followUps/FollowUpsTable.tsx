@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import UpdateFollowUp from "./UpdateFollowUp";
-import DeleteDialog from "./DeleteDialog";
+import DeleteDialog from "../dialogs/DeleteDialog";
 
 interface ClientContact {
   firstName: string;
@@ -38,6 +38,9 @@ const FollowUpsTable = () => {
   const [selectedFollowUp, setSelectedFollowUp] = useState<FollowUp | null>(null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
 
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  
   useEffect(() => {
     fetchFollowUps();
   }, []);
@@ -67,6 +70,13 @@ const FollowUpsTable = () => {
     setSelectedActivityId(activityId);
     setShowUpdateModal(true);
   };
+
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
 
   const handleDeleteActivity = async (followUpId: string, activityId: string) => {
     try {
@@ -173,11 +183,13 @@ const FollowUpsTable = () => {
                   <td className="py-4 px-2 text-center">{activity.salesExecutive}</td>
                   <td className="py-4 px-2 text-center">{activity.description}</td>
                   <td className="py-4 px-2 text-center">{activity.additionalNotes || "N/A"}</td>
-                  <td className="py-4 px-2 text-center">
+                  <td className="text-center py-4 pr-5">
                     <div className="flex justify-center gap-1">
                       <button
-                        className="bg-blue-500 text-white px-3 py-1 rounded-md hover:bg-blue-600 transition-colors"
-                        onClick={() => handleUpdateClick(followUp, activity.id)}
+                        className="bg-[#FF9800] text-white px-4 py-1 rounded-l-full flex items-center justify-center text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => {
+                          handleUpdateClick(followUp, activity.id);
+                        }}
                       >
                         Actualizar
                       </button>
@@ -186,8 +198,8 @@ const FollowUpsTable = () => {
                         itemDescription={`${activity.contactType} - ${activity.contactDate}`}
                         itemType="activity"
                         onDelete={() => handleDeleteActivity(followUp.id, activity.id)}
-                        triggerClassName="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
-                      />
+                        triggerClassName="bg-red-600 text-white px-3 py-1 rounded-r-full flex items-center justify-center text-sm hover:bg-red-700 transition-colors duration-200"
+                        />
                     </div>
                   </td>
                 </tr>
@@ -219,8 +231,18 @@ const FollowUpsTable = () => {
             setSelectedFollowUp(null);
             setSelectedActivityId(null);
           }}
-          onUpdate={() => fetchFollowUps()}
+          onUpdate={() => {
+            fetchFollowUps(); 
+            setToastMessage(`Los datos de seguimiento se han actualizado correctamente.`);
+            setShowToast(true);
+          }}
         />
+      )}
+
+      {showToast && (
+        <div className="fixed mt-20 top-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-all transform duration-500 ease-in-out z-50">
+          {toastMessage} 🎉
+        </div>
       )}
     </div>
   );

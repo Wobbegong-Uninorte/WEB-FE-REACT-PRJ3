@@ -5,8 +5,8 @@ import {
   Button,
   MenuItem,
 } from "@mui/material";
-import { FollowUpActivity } from "../types/followups";
-import { ContactType } from "../types/clients";
+import { FollowUpActivity } from "../../types/followups";
+import { ContactType } from "../../types/clients";
 
 interface FollowUpFormProps {
   onSubmit: (data: FollowUpActivity) => void;

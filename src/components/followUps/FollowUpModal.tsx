@@ -8,10 +8,10 @@ import {
   CircularProgress,
   Box,
 } from "@mui/material";
-import FollowUpForm from "./FollowUpForm";
-import { FollowUpActivity } from "../types/followups";
-import { ContactType, ClientType } from "../types/clients";
-import { fetchClients } from "../services/clientServices";
+import FollowUpForm from "../followUps/FollowUpForm";
+import { FollowUpActivity } from "../../types/followups";
+import { ContactType, ClientType } from "../../types/clients";
+import { fetchClients } from "../../services/clientServices";
 
 interface FollowUpModalProps {
   isOpen: boolean;

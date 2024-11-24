@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import OpportunityForm from "../components/OpportunityForm";
-import { createOpportunity } from "../services/opportunityServices";
-import { addOpportunityToClient } from "../services/clientServices";
-import { Opportunities } from "../types/opportunities";
-import { ClientType } from "../types/clients";
-import MainLayout from "../layouts/MainLayout";
+import OpportunityForm from "./OpportunityForm";
+import { createOpportunity } from "../../services/opportunityServices";
+import { addOpportunityToClient } from "../../services/clientServices";
+import { Opportunities } from "../../types/opportunities";
+import { ClientType } from "../../types/clients";
+import MainLayout from "../../layouts/MainLayout";
 
 const CreateOpportunity: React.FC = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const CreateOpportunity: React.FC = () => {
     estimatedDate: new Date(),
     status: "Apertura",
   };
-
+  
   const [opportunity, setOpportunity] = useState<Opportunities>(initialOpportunityState);
   const [clients, setClients] = useState<ClientType[]>([]);
 

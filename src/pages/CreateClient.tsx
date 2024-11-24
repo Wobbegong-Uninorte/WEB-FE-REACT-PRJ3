@@ -1,7 +1,7 @@
 // src/pages/CreateClient.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ClientForm from '../components/ClientForm';
+import ClientForm from '../components/clients/ClientForm';
 import { createClient } from '../services/clientServices';
 import { ClientType } from '../types/clients';
 import MainLayout from '../layouts/MainLayout';
