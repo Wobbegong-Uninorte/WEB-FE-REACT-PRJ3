@@ -1,5 +1,6 @@
-import {FollowUpActivity} from "./followups";
+import { FollowUpActivity } from "./followups";
 export interface Opportunities {
+  id: string;
   client: string;
   businessName: string;
   businessLine:

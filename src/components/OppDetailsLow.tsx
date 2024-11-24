@@ -12,6 +12,7 @@ import {
 import FollowUpModal from "./FollowUpModal";
 import {Button} from "@mui/material";
 import {PlusCircle} from 'lucide-react';
+import { ContactType } from "../types/clients";
 interface Opportunity {
   id: string;
   businessName: string;

@@ -38,7 +38,7 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
 
         // Busca el cliente que tenga esta oportunidad
         const client = clients.find((client) =>
-          client.opportunities?.includes(opportunityId)
+          client.opportunities?.some(opportunity => opportunity.id === opportunityId)
         );
 
         if (client) {
