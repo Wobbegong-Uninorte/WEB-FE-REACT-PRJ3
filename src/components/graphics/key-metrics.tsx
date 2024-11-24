@@ -5,7 +5,7 @@ import { Users, Target, TrendingUp, DollarSign } from "lucide-react";
 // Interfaces
 interface Opportunity {
   id: string;
-  estimatedValue: number;
+  estimatedValue: string | number;
   status: string;
 }
 
@@ -15,7 +15,7 @@ interface Client {
   active: boolean;
 }
 
-export function KeyMetrics() {
+export function KeyMetrics() { 
   const [totalClients, setTotalClients] = useState(0);
   const [openOpportunities, setOpenOpportunities] = useState(0);
   const [conversionRate, setConversionRate] = useState(0);
@@ -45,7 +45,13 @@ export function KeyMetrics() {
         setConversionRate(Number(conversionRate.toFixed(2)));
 
         // Ingresos proyectados (suma del valor estimado de todas las oportunidades)
-        const revenue = opportunities.reduce((sum, opp) => sum + opp.estimatedValue, 0);
+        const revenue = opportunities.reduce((sum, opp) => {
+          // Verificar si `opp.estimatedValue` es una cadena y convertirla a número
+          const value = typeof opp.estimatedValue === "string"
+            ? Number(opp.estimatedValue.replace(/[^0-9.-]+/g, ""))
+            : opp.estimatedValue;
+          return sum + (isNaN(value) ? 0 : value); // Ignorar valores no numéricos
+        }, 0);
         setProjectedRevenue(revenue);
       } catch (error) {
         console.error("Error fetching metrics:", error);
