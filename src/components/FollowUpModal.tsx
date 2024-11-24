@@ -37,10 +37,11 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
         const clients: ClientType[] = await fetchClients();
 
         // Busca el cliente que tenga esta oportunidad
-        const client = clients.find((client) =>
-          client.opportunities?.some(opportunity => opportunity.id === opportunityId)
-        );
-
+        const client = clients.find((client) => {        
+          // @ts-expect-error: Forzar uso de includes aunque TypeScript lance advertencia
+          return client.opportunities?.includes(opportunityId) || false;
+        });
+        
         if (client) {
           setContacts(client.contacts || []);
         } else {
@@ -60,18 +61,26 @@ const FollowUpModal: React.FC<FollowUpModalProps> = ({
     }
   }, [isOpen, opportunityId]);
 
-
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>Crear Actividad de Seguimiento</DialogTitle>
       <DialogContent>
         {isLoading ? (
-          <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center">
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+          >
             <CircularProgress />
             <p>Cargando contactos...</p>
           </Box>
         ) : (
-          <FollowUpForm onSubmit={onSubmit} onCancel={onClose} contacts={contacts} />
+          <FollowUpForm
+            onSubmit={onSubmit}
+            onCancel={onClose}
+            contacts={contacts}
+          />
         )}
       </DialogContent>
       <DialogActions>
