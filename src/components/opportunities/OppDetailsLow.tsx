@@ -1,5 +1,3 @@
-//OppDetailsLow.tsx
-
 import React, { useState, useEffect } from "react";
 import {
   FaClipboardList,
@@ -10,9 +8,11 @@ import {
   FaCalendarDay,
 } from "react-icons/fa";
 import FollowUpModal from "../followUps/FollowUpModal";
+import DeleteDialog from "../dialogs/DeleteDialog";
 import {Button} from "@mui/material";
 import {PlusCircle} from 'lucide-react';
 import { ContactType } from "../../types/clients";
+
 interface Opportunity {
   id: string;
   businessName: string;
@@ -21,9 +21,11 @@ interface Opportunity {
   estimatedValue: number;
   estimatedDate: string;
   status: string;
+  clientId?: number;
 }
 
 interface FollowUpActivity {
+  id: string;
   contactType: string;
   contactDate: string;
   clientContact: {
@@ -42,7 +44,9 @@ const OppDetailsLow: React.FC = () => {
   const [followUps, setFollowUps] = useState<FollowUpActivity[]>([]);
   const [isFollowUpModalOpen, setIsFollowUpModalOpen] = useState(false);
   const [contacts, setContacts] = useState<ContactType[]>([]);
-
+  const [error, setError] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
   useEffect(() => {
     const savedOpportunity = localStorage.getItem("selectedOpportunity");
@@ -54,6 +58,13 @@ const OppDetailsLow: React.FC = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showToast]);
+
   const fetchFollowUps = async (opportunityId: string) => {
     try {
       const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
@@ -62,6 +73,7 @@ const OppDetailsLow: React.FC = () => {
       setFollowUps(followUpData ? followUpData.followUpActivities : []);
     } catch (error) {
       console.error("Error fetching follow-up activities:", error);
+      setError("Error al cargar los seguimientos");
     }
   };
 
@@ -72,6 +84,55 @@ const OppDetailsLow: React.FC = () => {
       setContacts(data.contacts);
     } catch (error) {
       console.error("Error fetching contacts:", error);
+      setError("Error al cargar los contactos");
+    }
+  };
+
+  const handleDeleteActivity = async (activityId: string) => {
+    if (!opportunity) return;
+    
+    try {
+      // Obtener todos los follow-ups actuales
+      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
+      const data = await response.json();
+      const followUpData = data.find((follow: any) => follow.opportunityId === opportunity.id);
+      
+      if (!followUpData) return;
+
+      // Crear versión actualizada sin la actividad específica
+      const updatedFollowUp = {
+        ...followUpData,
+        followUpActivities: followUpData.followUpActivities.filter(
+          (activity: FollowUpActivity) => activity.id !== activityId
+        )
+      };
+
+      // Actualizar en el servidor
+      const updateResponse = await fetch(
+        `https://web-fe-react-prj3-api.onrender.com/follow/${followUpData.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(updatedFollowUp),
+        }
+      );
+
+      if (!updateResponse.ok) {
+        throw new Error("Error al eliminar la actividad");
+      }
+
+      // Actualizar estado local
+      setFollowUps(prevFollowUps => 
+        prevFollowUps.filter(activity => activity.id !== activityId)
+      );
+      
+      setToastMessage("Actividad eliminada correctamente");
+      setShowToast(true);
+    } catch (error) {
+      console.error("Error al eliminar la actividad:", error);
+      setError("No se pudo eliminar la actividad");
     }
   };
 
@@ -103,6 +164,12 @@ const OppDetailsLow: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6 bg-white rounded-xl">
+      {error && (
+        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
+          {error}
+        </div>
+      )}
+      
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
           <FaClipboardList className="mr-3 text-blue-600 text-2xl" />
@@ -122,7 +189,6 @@ const OppDetailsLow: React.FC = () => {
         </Button>
       </div>
 
-      {/* Información de la oportunidad */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="flex items-center space-x-2">
           <FaDollarSign className="text-gray-500" />
@@ -144,7 +210,6 @@ const OppDetailsLow: React.FC = () => {
         </div>
       </div>
 
-      {/* Estado de la oportunidad */}
       <div className="flex items-center space-x-2 mb-6">
         {getStatusIcon(opportunity.status)}
         <span
@@ -160,7 +225,6 @@ const OppDetailsLow: React.FC = () => {
       </div>
 
       <div className="hidden lg:block">
-        {/* Tabla de Seguimientos */}
         <table className="w-full border-t bg-white rounded-lg shadow-sm">
           <thead className="bg-gray-100 text-gray-600">
             <tr>
@@ -178,13 +242,18 @@ const OppDetailsLow: React.FC = () => {
               <th className="p-4 text-left text-sm font-semibold">
                 Notas Adicionales
               </th>
+              <th className="p-4 text-left text-sm font-semibold">
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody>
             {followUps.map((followUp, index) => (
               <tr
-                key={index}
-                className="hover:bg-gray-200 transition duration-300"
+                key={followUp.id}
+                className={`hover:bg-gray-200 transition duration-300 ${
+                  index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                }`}
               >
                 <td className="px-4 py-3 text-sm text-gray-700">
                   {followUp.contactDate}
@@ -213,6 +282,15 @@ const OppDetailsLow: React.FC = () => {
                 <td className="px-4 py-3 text-sm text-gray-700">
                   {followUp.additionalNotes}
                 </td>
+                <td className="px-4 py-3 text-sm">
+                  <DeleteDialog
+                    itemId={followUp.id}
+                    itemDescription={`${followUp.contactType} - ${followUp.contactDate}`}
+                    itemType="activity"
+                    onDelete={() => handleDeleteActivity(followUp.id)}
+                    triggerClassName="bg-red-600 text-white px-3 py-1 rounded-full flex items-center justify-center text-sm hover:bg-red-700 transition-colors duration-200"
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
@@ -222,7 +300,7 @@ const OppDetailsLow: React.FC = () => {
       <div className="block lg:hidden">
         <div className="space-y-4">
           {followUps.map((followUp) => (
-            <div className="bg-white border border-gray-300 rounded-lg shadow-sm p-4">
+            <div key={followUp.id} className="bg-white border border-gray-300 rounded-lg shadow-sm p-4">
               <div className="mb-2 text-xs font-semibold text-gray-500 uppercase">
                 {followUp.contactDate}
               </div>
@@ -252,10 +330,19 @@ const OppDetailsLow: React.FC = () => {
                   <strong>Descripción:</strong> {followUp.description}
                 </p>
               </div>
-              <div className="text-sm text-gray-700">
+              <div className="text-sm text-gray-700 mb-4">
                 <p>
                   <strong>Notas Adicionales:</strong> {followUp.additionalNotes}
                 </p>
+              </div>
+              <div className="flex justify-end">
+                <DeleteDialog
+                  itemId={followUp.id}
+                  itemDescription={`${followUp.contactType} - ${followUp.contactDate}`}
+                  itemType="activity"
+                  onDelete={() => handleDeleteActivity(followUp.id)}
+                  triggerClassName="bg-red-600 text-white px-3 py-1 rounded-full flex items-center justify-center text-sm hover:bg-red-700 transition-colors duration-200"
+                />
               </div>
             </div>
           ))}
@@ -270,6 +357,11 @@ const OppDetailsLow: React.FC = () => {
         opportunityId={opportunity.id}
       />
 
+      {showToast && (
+        <div className="fixed mt-20 top-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-all transform duration-500 ease-in-out z-50">
+          {toastMessage} 🎉
+        </div>
+      )}
     </div>
   );
 };
