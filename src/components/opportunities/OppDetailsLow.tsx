@@ -12,7 +12,7 @@ import {
 import FollowUpModal from "../followUps/FollowUpModal";
 import {Button} from "@mui/material";
 import {PlusCircle} from 'lucide-react';
-import { ContactType } from "../../types/clients";
+
 interface Opportunity {
   id: string;
   businessName: string;
@@ -41,7 +41,9 @@ const OppDetailsLow: React.FC = () => {
   const [opportunity, setOpportunity] = useState<Opportunity | null>(null);
   const [followUps, setFollowUps] = useState<FollowUpActivity[]>([]);
   const [isFollowUpModalOpen, setIsFollowUpModalOpen] = useState(false);
-  const [contacts, setContacts] = useState<ContactType[]>([]);
+
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
 
   useEffect(() => {
@@ -50,7 +52,6 @@ const OppDetailsLow: React.FC = () => {
       const opportunityData = JSON.parse(savedOpportunity);
       setOpportunity(opportunityData);
       fetchFollowUps(opportunityData.id);
-      fetchContacts(opportunityData.clientId);
     }
   }, []);
 
@@ -58,28 +59,27 @@ const OppDetailsLow: React.FC = () => {
     try {
       const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
       const data = await response.json();
-      const followUpData = data.find((follow: any) => follow.opportunityId === opportunityId);
-      setFollowUps(followUpData ? followUpData.followUpActivities : []);
+      
+      // Filtrar todos los elementos que coinciden con el opportunityId
+      const followUpData = data.filter((follow: any) => follow.opportunityId === opportunityId);
+      
+      // Obtener todas las actividades de seguimiento de los elementos filtrados
+      const allFollowUpActivities = followUpData.flatMap((follow: any) => follow.followUpActivities);
+      
+      // Establecer los seguimientos en el estado
+      setFollowUps(allFollowUpActivities);
     } catch (error) {
       console.error("Error fetching follow-up activities:", error);
     }
   };
 
-  const fetchContacts = async (clientId: number) => {
-    try {
-      const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/clients/${clientId}`);
-      const data = await response.json();
-      setContacts(data.contacts);
-    } catch (error) {
-      console.error("Error fetching contacts:", error);
+  useEffect(() => {
+    if (showToast) {
+      const timer = setTimeout(() => setShowToast(false), 3000);
+      return () => clearTimeout(timer);
     }
-  };
-
-  const handleCreateFollowUp = (newFollowUp: FollowUpActivity) => {
-    setFollowUps((prev) => [...prev, newFollowUp]);
-    setIsFollowUpModalOpen(false);
-  };
-
+  }, [showToast]);
+  
   const getStatusIcon = (status: string) => {
     switch (status.toUpperCase()) {
       case "GANADA":
@@ -261,13 +261,21 @@ const OppDetailsLow: React.FC = () => {
           ))}
         </div>
       </div>
+      {showToast && (
+        <div className="fixed mt-20 top-4 right-4 bg-green-500 text-white py-2 px-4 rounded-lg shadow-lg transition-all transform duration-500 ease-in-out z-50">
+          {toastMessage} 🎉
+        </div>
+      )}
 
       <FollowUpModal
         isOpen={isFollowUpModalOpen}
         onClose={() => setIsFollowUpModalOpen(false)}
-        onSubmit={handleCreateFollowUp}
-        contacts={contacts}
         opportunityId={opportunity.id}
+        onUpdate={() => {
+          fetchFollowUps(opportunity.id); 
+          setToastMessage(`El seguimiento se ha creado correctamente.`);
+          setShowToast(true);
+      }} 
       />
 
     </div>

@@ -40,16 +40,22 @@ const ClientDetailLow: React.FC<ClientDetailLowProps> = ({ opportunity, onClose 
 
     const fetchFollowUps = async () => {
         try {
-            const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
-            const data = await response.json();
-            
-            const followUpData = data.find((follow: any) => follow.opportunityId === opportunity.id);
-            setFollowUps(followUpData ? followUpData.followUpActivities : []);
+          const response = await fetch(`https://web-fe-react-prj3-api.onrender.com/follow`);
+          const data = await response.json();
+      
+          // Filtrar todos los elementos que coinciden con el opportunityId
+          const followUpData = data.filter((follow: any) => follow.opportunityId === opportunity.id);
+          
+          // Obtener todas las actividades de seguimiento de los elementos filtrados
+          const allFollowUpActivities = followUpData.flatMap((follow: any) => follow.followUpActivities);
+          
+          // Establecer los seguimientos en el estado
+          setFollowUps(allFollowUpActivities);
         } catch (error) {
-            console.error('Error fetching follow-up activities:', error);
+          console.error('Error fetching follow-up activities:', error);
         }
-    };
-
+      };
+      
     const getStatusIcon = (status: string) => {
         switch (status.toUpperCase()) {
             case 'GANADA':

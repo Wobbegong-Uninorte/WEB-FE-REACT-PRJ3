@@ -3,6 +3,10 @@ import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import ReactPaginate from "react-paginate";
 import UpdateFollowUp from "./UpdateFollowUp";
 import DeleteDialog from "../dialogs/DeleteDialog";
+import { PlusCircle } from 'lucide-react';
+import { Button } from '@mui/material';
+import CreateFollowUpModal from './CreateFollowUpModal';
+
 
 interface ClientContact {
   firstName: string;
@@ -40,6 +44,11 @@ const FollowUpsTable = () => {
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
   
   useEffect(() => {
     fetchFollowUps();
@@ -140,9 +149,22 @@ const FollowUpsTable = () => {
       </div>
     );
   }
+  
 
   return (
     <div className="flex flex-col items-center p-4">
+      <div className="self-start mb-4">
+          <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              startIcon={<PlusCircle size={16} />}
+              style={{ paddingLeft: '8px', fontWeight: 'bold' }}
+              onClick={handleOpenModal}
+          >
+              Crear Seguimiento
+          </Button>
+      </div>
       {error && (
         <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-md">
           {error}
@@ -244,6 +266,15 @@ const FollowUpsTable = () => {
           {toastMessage} 🎉
         </div>
       )}
+      <CreateFollowUpModal 
+          isOpen={isModalOpen} 
+          onClose={handleCloseModal} 
+          onUpdate={() => {
+              fetchFollowUps(); 
+              setToastMessage(`El seguimiento se ha creado correctamente.`);
+              setShowToast(true);
+          }} 
+      />
     </div>
   );
 };
