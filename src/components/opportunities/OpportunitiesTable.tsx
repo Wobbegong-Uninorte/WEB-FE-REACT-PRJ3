@@ -198,7 +198,7 @@ const OpportunitiesTable = () => {
                 key={opportunity.id}
                 className={`${index % 2 === 0 ? 'bg-gray-100' : 'bg-white'} text-sm text-gray-700`}
               >
-                <td className="py-4 px-2 text-center w-[120px]" onClick={() => handleOpportunityClick(opportunity)}>
+                <td className="py-4 px-2 text-center w-[120px] hover:underline" onClick={() => handleOpportunityClick(opportunity)}>
                   {opportunity.businessName}
                 </td>
                 <td className="py-4 px-2 text-center w-[120px]">{opportunity.businessLine}</td>
